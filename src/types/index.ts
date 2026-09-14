@@ -155,7 +155,7 @@ export interface ParsedComment {
   simpleFormat: boolean;
   disablePhotos: boolean;
   uses: number;
-  sortOrder: number;
+  sortOrder?: number;
 }
 
 export interface ParsedItem {

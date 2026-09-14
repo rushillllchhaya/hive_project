@@ -156,7 +156,7 @@ async function callGemini(apiKey: string, prompt: string): Promise<string> {
 // NVIDIA NIM API call (OpenAI-compatible)
 // ============================================================
 async function callNvidia(apiKey: string, prompt: string): Promise<string> {
-  const model = process.env.NVIDIA_MODEL || 'meta/llama-3.3-70b-instruct';
+  const model = process.env.NVIDIA_MODEL || 'meta/llama-3.2-11b-vision-instruct';
   const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
     method: 'POST',
     headers: {
