@@ -1,0 +1,177 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+// ============================================================
+// POST /api/ai/rewrite — AI-powered comment rewriting
+// ============================================================
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { action, commentText, context } = body;
+
+    if (!commentText) {
+      return NextResponse.json(
+        { success: false, error: 'Comment text is required' },
+        { status: 400 }
+      );
+    }
+
+    // Determine which AI provider to use
+    const googleKey = process.env.GOOGLE_AI_API_KEY;
+    const openaiKey = process.env.OPENAI_API_KEY;
+
+    if (!googleKey && !openaiKey) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'No AI API key configured. Set GOOGLE_AI_API_KEY or OPENAI_API_KEY in environment variables.',
+        },
+        { status: 503 }
+      );
+    }
+
+    // Build the prompt based on action
+    const prompt = buildPrompt(action, commentText, context);
+
+    let suggestion: string;
+
+    if (googleKey) {
+      suggestion = await callGemini(googleKey, prompt);
+    } else if (openaiKey) {
+      suggestion = await callOpenAI(openaiKey, prompt);
+    } else {
+      return NextResponse.json({ success: false, error: 'No AI provider available' }, { status: 503 });
+    }
+
+    // Validate the AI response
+    if (!suggestion || suggestion.trim().length === 0) {
+      return NextResponse.json({
+        success: false,
+        original: commentText,
+        suggestion: '',
+        error: 'AI returned an empty response. Original text preserved.',
+      });
+    }
+
+    // Check for obvious hallucination (response much longer than input)
+    if (suggestion.length > commentText.length * 5 && commentText.length > 50) {
+      return NextResponse.json({
+        success: false,
+        original: commentText,
+        suggestion,
+        error: 'AI response seems unusually long compared to input. Review carefully before accepting.',
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      original: commentText,
+      suggestion: suggestion.trim(),
+    });
+  } catch (error) {
+    console.error('AI rewrite error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: `AI service error: ${error instanceof Error ? error.message : 'Unknown error'}. Original text preserved.`,
+        original: '',
+        suggestion: '',
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// ============================================================
+// Build prompt based on action type
+// ============================================================
+function buildPrompt(action: string, text: string, context?: string): string {
+  const contextStr = context ? `\nContext: This comment is in the "${context}" section of a home inspection template.` : '';
+
+  switch (action) {
+    case 'rewrite':
+      return `You are an expert home inspection report writer. Rewrite the following inspection comment to sound more professional and clear, while preserving ALL technical details and findings. Do not add information that isn't present. Do not remove any defects or observations. Keep the same meaning.${contextStr}
+
+Input: ${text}
+
+Output the rewritten comment only, no explanations or preamble.`;
+
+    case 'suggest':
+      return `You are an expert home inspection report writer. The inspector has written a brief note about a defect. Expand it into standard, professional inspection language that would be appropriate for a home inspection report. Be specific and actionable. Include recommended actions where appropriate.${contextStr}
+
+Inspector's note: ${text}
+
+Output the professional comment only, no explanations or preamble.`;
+
+    case 'summarize':
+      return `You are an expert home inspection report writer. Summarize the following inspection comments into a concise, clear overview paragraph. Preserve all key findings and defects.${contextStr}
+
+Comments: ${text}
+
+Output the summary only, no explanations or preamble.`;
+
+    case 'bulk-edit':
+      return `You are an expert home inspection report writer. Improve the following inspection comment for clarity, grammar, and professionalism. Make minimal changes — preserve the inspector's voice and technical accuracy.${contextStr}
+
+Input: ${text}
+
+Output the improved comment only, no explanations or preamble.`;
+
+    default:
+      return `Rewrite the following text to be more professional and clear:\n\n${text}\n\nOutput the rewritten text only.`;
+  }
+}
+
+// ============================================================
+// Gemini API call
+// ============================================================
+async function callGemini(apiKey: string, prompt: string): Promise<string> {
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.3,
+          maxOutputTokens: 1024,
+        },
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.text();
+    throw new Error(`Gemini API error (${response.status}): ${errorData}`);
+  }
+
+  const data = await response.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+// ============================================================
+// OpenAI API call
+// ============================================================
+async function callOpenAI(apiKey: string, prompt: string): Promise<string> {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.3,
+      max_tokens: 1024,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.text();
+    throw new Error(`OpenAI API error (${response.status}): ${errorData}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || '';
+}
