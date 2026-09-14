@@ -16,14 +16,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Determine which AI provider to use
+    const nvidiaKey = process.env.NVIDIA_API_KEY;
     const googleKey = process.env.GOOGLE_AI_API_KEY;
     const openaiKey = process.env.OPENAI_API_KEY;
 
-    if (!googleKey && !openaiKey) {
+    if (!nvidiaKey && !googleKey && !openaiKey) {
       return NextResponse.json(
         {
           success: false,
-          error: 'No AI API key configured. Set GOOGLE_AI_API_KEY or OPENAI_API_KEY in environment variables.',
+          error: 'No AI API key configured. Set NVIDIA_API_KEY, GOOGLE_AI_API_KEY, or OPENAI_API_KEY in environment variables.',
         },
         { status: 503 }
       );
@@ -34,7 +35,9 @@ export async function POST(request: NextRequest) {
 
     let suggestion: string;
 
-    if (googleKey) {
+    if (nvidiaKey) {
+      suggestion = await callNvidia(nvidiaKey, prompt);
+    } else if (googleKey) {
       suggestion = await callGemini(googleKey, prompt);
     } else if (openaiKey) {
       suggestion = await callOpenAI(openaiKey, prompt);
@@ -147,6 +150,34 @@ async function callGemini(apiKey: string, prompt: string): Promise<string> {
 
   const data = await response.json();
   return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+// ============================================================
+// NVIDIA NIM API call (OpenAI-compatible)
+// ============================================================
+async function callNvidia(apiKey: string, prompt: string): Promise<string> {
+  const model = process.env.NVIDIA_MODEL || 'meta/llama-3.3-70b-instruct';
+  const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.2,
+      max_tokens: 1024,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.text();
+    throw new Error(`NVIDIA API error (${response.status}): ${errorData}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || '';
 }
 
 // ============================================================
