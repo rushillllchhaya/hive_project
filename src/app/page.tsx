@@ -373,7 +373,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-[#f0f0f5] flex flex-col font-sans selection:bg-amber-500/30 selection:text-amber-200">
+    <div className="min-h-screen w-full bg-[#0a0a0f] text-[#f0f0f5] flex flex-col font-sans selection:bg-amber-500/30 selection:text-amber-200">
       {/* Top Banner for Supabase / Cloud persistence setup */}
       <div className="bg-gradient-to-r from-amber-500/10 via-amber-600/10 to-transparent border-b border-amber-500/20 px-4 py-2 flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
