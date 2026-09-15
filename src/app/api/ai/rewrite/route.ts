@@ -153,31 +153,82 @@ async function callGemini(apiKey: string, prompt: string): Promise<string> {
 }
 
 // ============================================================
-// NVIDIA NIM API call (OpenAI-compatible)
+// NVIDIA NIM API call (OpenAI-compatible) with auto-fallback
 // ============================================================
-async function callNvidia(apiKey: string, prompt: string): Promise<string> {
-  const model = process.env.NVIDIA_MODEL || 'meta/llama-3.2-11b-vision-instruct';
-  const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.2,
-      max_tokens: 1024,
-    }),
-  });
+const DEFAULT_NVIDIA_MODELS = [
+  'meta/llama-3.2-11b-vision-instruct',
+  'nvidia/llama-3.1-nemotron-70b-instruct',
+  'meta/llama-3.2-90b-vision-instruct',
+];
 
-  if (!response.ok) {
-    const errorData = await response.text();
-    throw new Error(`NVIDIA API error (${response.status}): ${errorData}`);
+// Models known to have reached EOL/sunset on NVIDIA NIM
+const RETIRED_MODELS = new Set([
+  'meta/llama-3.3-70b-instruct',
+  'meta/llama-3-70b-instruct',
+  'meta/llama-3-8b-instruct',
+  'meta/llama3-70b-instruct',
+  'meta/llama3-8b-instruct',
+]);
+
+async function callNvidia(apiKey: string, prompt: string): Promise<string> {
+  let configuredModel = process.env.NVIDIA_MODEL?.trim();
+
+  // If configured model is known to be sunset/retired, swap to active Llama 3.2
+  if (!configuredModel || RETIRED_MODELS.has(configuredModel)) {
+    configuredModel = DEFAULT_NVIDIA_MODELS[0];
   }
 
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content || '';
+  // List of models to try in order
+  const modelsToTry = [configuredModel, ...DEFAULT_NVIDIA_MODELS.filter(m => m !== configuredModel)];
+
+  let lastError: Error | null = null;
+
+  for (const model of modelsToTry) {
+    try {
+      const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.2,
+          max_tokens: 1024,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        // If 410 (Gone), 404 (Not Found), or model retired/unavailable, continue to fallback
+        if (
+          response.status === 410 ||
+          response.status === 404 ||
+          errorData.includes('no longer available') ||
+          errorData.includes('end of life') ||
+          errorData.includes('reached its end')
+        ) {
+          console.warn(`[NVIDIA AI] Model ${model} is unavailable (${response.status}). Trying fallback...`);
+          lastError = new Error(`NVIDIA model ${model} unavailable: ${errorData}`);
+          continue;
+        }
+        throw new Error(`NVIDIA API error (${response.status}): ${errorData}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content || '';
+      if (content) return content;
+    } catch (err: any) {
+      lastError = err;
+      // If it's an authorization failure, throw immediately without trying fallbacks
+      if (err.message?.includes('(401)') || err.message?.includes('(403)')) {
+        throw err;
+      }
+    }
+  }
+
+  throw lastError || new Error('NVIDIA NIM API failed to generate response');
 }
 
 // ============================================================
