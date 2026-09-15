@@ -155,11 +155,23 @@ export default function Home() {
     document.body.appendChild(a); a.click(); a.remove();
   };
 
-  const triggerAI = async (si: number, ii: number, ci: number, text: string, action: 'rewrite' | 'suggest' | 'summarize') => {
+  const triggerAI = async (
+    si: number,
+    ii: number,
+    ci: number,
+    text: string,
+    action: 'rewrite' | 'suggest' | 'summarize',
+    isPlayground = false
+  ) => {
     setAiTargetComment({ sectionIdx: si, itemIdx: ii, commentIdx: ci, text, action });
     setAiSuggestion(''); setAiError(null); setAiLoading(true); setAiModalOpen(true);
     try {
-      const res = await fetch('/api/ai/rewrite', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, commentText: text, context: activeTemplate?.sections[si]?.name || '' }) });
+      const sectionName = (!isPlayground && si >= 0 && activeTemplate?.sections[si]?.name) ? activeTemplate.sections[si].name : '';
+      const res = await fetch('/api/ai/rewrite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, commentText: text, context: sectionName }),
+      });
       const data = await res.json();
       if (data.success && data.suggestion) setAiSuggestion(data.suggestion);
       else setAiError(data.error || 'Empty response.');
@@ -168,7 +180,14 @@ export default function Home() {
   };
 
   const applyAI = () => {
-    if (!aiTargetComment || !aiSuggestion || !activeTemplate) return;
+    if (!aiTargetComment || !aiSuggestion) return;
+    if (aiTargetComment.sectionIdx < 0) {
+      const el = document.getElementById('ai-input') as HTMLTextAreaElement;
+      if (el) el.value = aiSuggestion;
+      setAiModalOpen(false);
+      return;
+    }
+    if (!activeTemplate) return;
     const cl = JSON.parse(JSON.stringify(templates));
     const cur = cl[activeTemplateIndex];
     if (cur?.sections[aiTargetComment.sectionIdx]?.items[aiTargetComment.itemIdx]?.comments[aiTargetComment.commentIdx])
@@ -827,10 +846,10 @@ export default function Home() {
                       className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 leading-relaxed resize-none transition-all"
                     />
                     <div className="flex flex-wrap items-center gap-3 pt-1">
-                      <Btn onClick={() => { const el = document.getElementById('ai-input') as HTMLTextAreaElement; if (el) triggerAI(0, 0, 0, el.value, 'rewrite'); }}>
+                      <Btn onClick={() => { const el = document.getElementById('ai-input') as HTMLTextAreaElement; if (el) triggerAI(-1, -1, -1, el.value, 'rewrite', true); }}>
                         <Sparkles className="w-4 h-4" /> Professional Rewrite
                       </Btn>
-                      <Btn variant="secondary" onClick={() => { const el = document.getElementById('ai-input') as HTMLTextAreaElement; if (el) triggerAI(0, 0, 0, el.value, 'suggest'); }}>
+                      <Btn variant="secondary" onClick={() => { const el = document.getElementById('ai-input') as HTMLTextAreaElement; if (el) triggerAI(-1, -1, -1, el.value, 'suggest', true); }}>
                         <Zap className="w-4 h-4 text-amber-500" /> Expand Defect &amp; Action
                       </Btn>
                     </div>

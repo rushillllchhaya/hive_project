@@ -78,39 +78,63 @@ export async function POST(request: NextRequest) {
 // Build prompt based on action type
 // ============================================================
 function buildPrompt(action: string, text: string, context?: string): string {
-  const contextStr = context ? `\nContext: This comment is in the "${context}" section of a home inspection template.` : '';
+  const contextNote = context?.trim()
+    ? `\nReference Category: The user's template section is labeled "${context.trim()}". However, you must ONLY describe the exact components, defects, and systems present in the inspector's input. Never force or assume this comment is about "${context.trim()}" if the input describes a different component, trade, or issue.`
+    : '';
+
+  const coreRules = `
+Strict Rules:
+1. Focus STRICTLY on the actual components, defects, and systems mentioned in the input text. Never invent or prepend unrelated home systems (e.g., do NOT mention roofing, attic, or general structure unless explicitly stated in the input).
+2. Do NOT prepend or output markdown headings (such as "**Roofing System:**") or section titles. If the input contains existing section titles or headers, strip them away completely.
+3. Do NOT fabricate artificial condition statements (such as "The roofing system appears to be in generally good condition").
+4. Active rephrasing: Do NOT return the input text verbatim. Even if the input is already formatted or lengthy, actively rephrase, polish, and synthesize the narrative into clear, objective, liability-conscious inspection report language following InterNACHI SOP standards.
+5. Structure: State the factual observation, explain the potential implication or safety concern, and recommend evaluation by a licensed specialist in the relevant trade (e.g. licensed plumber, electrician, HVAC technician, roofing contractor).${contextNote}`;
 
   switch (action) {
     case 'rewrite':
-      return `You are an expert home inspection report writer. Rewrite the following inspection comment to sound more professional and clear, while preserving ALL technical details and findings. Do not add information that isn't present. Do not remove any defects or observations. Keep the same meaning.${contextStr}
+      return `You are an expert home inspection report writer. Rewrite the following inspector notes into a concise, professional, report-ready finding.
+${coreRules}
 
-Input: ${text}
+Input:
+${text}
 
-Output the rewritten comment only, no explanations or preamble.`;
+Output the professional rewritten comment only, no explanations or preamble.`;
 
     case 'suggest':
-      return `You are an expert home inspection report writer. The inspector has written a brief note about a defect. Expand it into standard, professional inspection language that would be appropriate for a home inspection report. Be specific and actionable. Include recommended actions where appropriate.${contextStr}
+      return `You are an expert home inspection report writer. Expand the following brief inspector note into a complete, professional defect narrative suitable for an official inspection report.
+${coreRules}
 
-Inspector's note: ${text}
+Input:
+${text}
 
-Output the professional comment only, no explanations or preamble.`;
+Output the expanded professional defect comment only, no explanations or preamble.`;
 
     case 'summarize':
-      return `You are an expert home inspection report writer. Summarize the following inspection comments into a concise, clear overview paragraph. Preserve all key findings and defects.${contextStr}
+      return `You are an expert home inspection report writer. Summarize the following inspection observations into a clear, unified summary paragraph preserving all technical findings.
+${coreRules}
 
-Comments: ${text}
+Input:
+${text}
 
 Output the summary only, no explanations or preamble.`;
 
     case 'bulk-edit':
-      return `You are an expert home inspection report writer. Improve the following inspection comment for clarity, grammar, and professionalism. Make minimal changes — preserve the inspector's voice and technical accuracy.${contextStr}
+      return `You are an expert home inspection report writer. Improve the following inspection comment for clarity, grammar, and professionalism while maintaining factual accuracy.
+${coreRules}
 
-Input: ${text}
+Input:
+${text}
 
 Output the improved comment only, no explanations or preamble.`;
 
     default:
-      return `Rewrite the following text to be more professional and clear:\n\n${text}\n\nOutput the rewritten text only.`;
+      return `You are an expert home inspection report writer. Rewrite the following inspection text to be professional, objective, and clear.
+${coreRules}
+
+Input:
+${text}
+
+Output the rewritten text only.`;
   }
 }
 
@@ -126,7 +150,7 @@ async function callGemini(apiKey: string, prompt: string): Promise<string> {
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
-          temperature: 0.3,
+          temperature: 0.2,
           maxOutputTokens: 1024,
         },
       }),
@@ -234,7 +258,7 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<string> {
     body: JSON.stringify({
       model: 'gpt-4o-mini',
       messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
+      temperature: 0.2,
       max_tokens: 1024,
     }),
   });
