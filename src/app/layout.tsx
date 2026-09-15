@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description: "Enterprise template migration engine for Spectora, visual template editor, and AI defect copilot.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
