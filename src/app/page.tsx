@@ -13,17 +13,17 @@ import { SAMPLE_SPECTORA_TEMPLATE, SAMPLE_VALIDATION_LOGS } from '@/lib/mock-dat
 
 const STORAGE_KEY = 'hive_inspect_templates_v1';
 
-/* ─── tiny shared primitives ─────────────────────────────── */
+/* ─── shared primitives ──────────────────────────────────── */
 const Badge = ({ children, variant = 'blue' }: { children: React.ReactNode; variant?: 'blue' | 'green' | 'red' | 'amber' | 'gray' }) => {
   const map: Record<string, string> = {
-    blue:  'bg-blue-50 text-blue-700 border border-blue-100',
-    green: 'bg-green-50 text-green-700 border border-green-200',
-    red:   'bg-red-50   text-red-600   border border-red-100',
+    blue:  'bg-blue-50 text-blue-700 border border-blue-200',
+    green: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    red:   'bg-red-50 text-red-600 border border-red-200',
     amber: 'bg-amber-50 text-amber-700 border border-amber-200',
-    gray:  'bg-slate-100 text-slate-500 border border-slate-200',
+    gray:  'bg-slate-100 text-slate-600 border border-slate-200',
   };
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide ${map[variant]}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide ${map[variant]}`}>
       {children}
     </span>
   );
@@ -33,16 +33,20 @@ const Btn = ({
   children, onClick, variant = 'primary', size = 'md', className = '', disabled = false, title,
 }: {
   children: React.ReactNode; onClick?: () => void; variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'ai';
-  size?: 'sm' | 'md'; className?: string; disabled?: boolean; title?: string;
+  size?: 'sm' | 'md' | 'lg'; className?: string; disabled?: boolean; title?: string;
 }) => {
-  const base = 'inline-flex items-center gap-1.5 font-semibold rounded-xl transition-all duration-150 cursor-pointer whitespace-nowrap select-none disabled:opacity-50 disabled:cursor-not-allowed';
-  const sizes: Record<string, string> = { sm: 'px-2.5 py-1.5 text-[11px]', md: 'px-4 py-2 text-xs' };
+  const base = 'inline-flex items-center gap-2 font-semibold rounded-xl transition-all duration-150 cursor-pointer whitespace-nowrap select-none disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]';
+  const sizes: Record<string, string> = {
+    sm: 'px-3 py-1.5 text-xs',
+    md: 'px-4 py-2 text-xs sm:text-sm',
+    lg: 'px-5 py-2.5 text-sm font-bold',
+  };
   const variants: Record<string, string> = {
-    primary:   'bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white shadow-sm hover:shadow-md',
-    secondary: 'bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-700 shadow-xs',
-    ghost:     'bg-transparent hover:bg-slate-100 text-slate-500 hover:text-slate-700',
-    danger:    'bg-red-50 hover:bg-red-100 border border-red-100 text-red-600',
-    ai:        'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm',
+    primary:   'bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/30',
+    secondary: 'bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-700 shadow-xs hover:shadow-sm',
+    ghost:     'bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-800',
+    danger:    'bg-red-50 hover:bg-red-100 border border-red-200 text-red-600',
+    ai:        'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-500/20',
   };
   return (
     <button onClick={onClick} disabled={disabled} title={title}
@@ -53,7 +57,7 @@ const Btn = ({
 };
 
 const Card = ({ children, className = '', hover = false }: { children: React.ReactNode; className?: string; hover?: boolean }) => (
-  <div className={`bg-white rounded-2xl border border-slate-100 shadow-sm ${hover ? 'transition-all duration-200 hover:shadow-md hover:border-blue-100' : ''} ${className}`}>
+  <div className={`bg-white rounded-2xl border border-slate-200/90 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] ${hover ? 'transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-4px_rgba(37,99,235,0.09),0_4px_12px_-2px_rgba(37,99,235,0.05)] hover:border-blue-300' : ''} ${className}`}>
     {children}
   </div>
 );
@@ -225,170 +229,232 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-[#f7f9fc] text-slate-900 font-['Inter',sans-serif] antialiased">
 
       {/* ── announcement strip ── */}
-      <div className="bg-blue-600 text-white text-[11px] font-medium px-4 py-1.5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse-dot" />
-          <span className="font-semibold">Hive Inspect Studio</span>
-          <span className="text-blue-200">·</span>
-          <span className="text-blue-100">Spectora Importer + NVIDIA Llama-3.2 AI Copilot</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <button onClick={() => setSqlModalOpen(true)}
-            className="flex items-center gap-1 text-blue-100 hover:text-white transition-colors">
-            <Database className="w-3 h-3" /> Supabase SQL Setup
-          </button>
-          <a href="https://github.com/rushillllchhaya/hive_project" target="_blank" rel="noreferrer"
-            className="flex items-center gap-1 text-blue-100 hover:text-white transition-colors">
-            GitHub <ExternalLink className="w-3 h-3" />
-          </a>
+      <div className="bg-blue-600 text-white border-b border-blue-700/60">
+        <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-dot" />
+            <span className="font-bold text-white tracking-wide">Hive Inspect Studio</span>
+            <span className="text-blue-300">·</span>
+            <span className="text-blue-100 font-normal">Spectora Importer + NVIDIA Llama-3.2 AI Copilot</span>
+          </div>
+          <div className="flex items-center gap-5">
+            <button onClick={() => setSqlModalOpen(true)}
+              className="flex items-center gap-1.5 text-blue-100 hover:text-white font-medium transition-colors">
+              <Database className="w-3.5 h-3.5 text-blue-200" /> Supabase SQL Setup
+            </button>
+            <a href="https://github.com/rushillllchhaya/hive_project" target="_blank" rel="noreferrer"
+              className="flex items-center gap-1.5 text-blue-100 hover:text-white font-medium transition-colors">
+              GitHub <ExternalLink className="w-3.5 h-3.5 text-blue-200" />
+            </a>
+          </div>
         </div>
       </div>
 
       {/* ── main navbar ── */}
-      <header className="sticky top-0 z-40 bg-white border-b border-slate-100 shadow-[0_1px_3px_0_rgb(0,0,0,0.06)]">
-        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-6">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
           {/* logo */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-black text-sm shadow-sm shadow-blue-300/50">
+          <div className="flex items-center gap-3.5 shrink-0">
+            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white font-black text-lg shadow-md shadow-blue-500/25">
               H
             </div>
-            <div className="leading-tight">
-              <div className="flex items-center gap-1.5">
-                <span className="font-bold text-sm text-slate-800 tracking-tight">Hive Inspect</span>
-                <span className="px-1.5 py-0.5 text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 rounded-full uppercase tracking-wide">Enterprise</span>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-extrabold text-base text-slate-900 tracking-tight">Hive Inspect</span>
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200/80 rounded-full uppercase tracking-wider">Enterprise</span>
               </div>
-              <p className="text-[10px] text-slate-400 font-normal">Template Importer & AI Inspector Studio</p>
+              <p className="text-xs text-slate-400 font-medium">Template Importer &amp; AI Inspector Studio</p>
             </div>
           </div>
 
           {/* tabs */}
-          <nav className="flex items-center gap-0.5 p-1 bg-slate-100 rounded-xl">
+          <nav className="flex items-center gap-1 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/60">
             {tabs.map(({ id, icon: Icon, label }) => (
               <button key={id} onClick={() => setActiveTab(id as any)}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 ${
                   activeTab === id
-                    ? 'bg-white text-blue-700 shadow-sm border border-slate-200/80 font-semibold'
-                    : 'text-slate-500 hover:text-slate-800 hover:bg-white/60'
+                    ? 'bg-white text-blue-700 shadow-sm border border-slate-200/80 font-bold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
                 }`}>
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className="w-4 h-4" />
                 {label}
               </button>
             ))}
           </nav>
+
+          {/* right actions */}
+          <div className="hidden md:flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 font-medium">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>NVIDIA NIM AI</span>
+            </div>
+            <Btn onClick={() => setActiveTab('import')} size="sm">
+              <Upload className="w-3.5 h-3.5" /> Import XLS
+            </Btn>
+          </div>
         </div>
       </header>
 
       {/* ── page content ── */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-8 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-8 sm:py-10 space-y-10">
 
         {/* ══════════════════════════════════════════════════
             DASHBOARD TAB
         ══════════════════════════════════════════════════ */}
         {activeTab === 'dashboard' && (
-          <div className="space-y-7 animate-fade-up">
+          <div className="space-y-10 animate-fade-up">
 
             {/* hero */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 p-8 text-white shadow-xl shadow-blue-200/70">
-              {/* decorative circles */}
-              <div className="absolute -right-20 -top-20 w-72 h-72 bg-white/5 rounded-full" />
-              <div className="absolute right-16 bottom-0 w-40 h-40 bg-blue-400/20 rounded-full blur-2xl" />
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-8 sm:p-10 lg:p-12 text-white shadow-xl shadow-blue-500/15">
+              {/* decorative glows */}
+              <div className="absolute -right-20 -top-20 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute right-1/4 bottom-0 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl pointer-events-none" />
 
-              <div className="relative z-10 max-w-xl space-y-3">
-                <div className="inline-flex items-center gap-2 bg-white/15 border border-white/20 rounded-full px-3 py-1 text-[11px] font-semibold text-white">
-                  <Sparkles className="w-3 h-3" /> Modern Inspection Template Engine
-                </div>
-                <h1 className="text-[1.85rem] font-extrabold leading-tight tracking-tight">
-                  Inspect Templates &amp; Defect Library
-                </h1>
-                <p className="text-sm text-blue-100 leading-relaxed">
-                  Import, validate, and customize Spectora inspection templates with instant SheetJS
-                  parsing and AI-assisted defect enrichment via NVIDIA NIM.
-                </p>
-                <div className="flex items-center gap-3 pt-1">
-                  <Btn onClick={() => setActiveTab('import')}>
-                    <Upload className="w-3.5 h-3.5" /> Import Spectora File
-                  </Btn>
-                  <button onClick={handleLoadDemo}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-medium transition-all">
-                    <FileSpreadsheet className="w-3.5 h-3.5" /> Load Sample
-                  </button>
-                </div>
-              </div>
-
-              {/* stat pills */}
-              <div className="relative z-10 flex flex-wrap gap-3 mt-8 pt-6 border-t border-white/15">
-                {[
-                  { icon: FileText,      val: templates.length, label: 'Active Templates' },
-                  { icon: Layers,        val: stats.s,          label: 'Sections' },
-                  { icon: FolderTree,    val: stats.it,         label: 'Items' },
-                  { icon: AlertTriangle, val: stats.de,         label: 'Defects' },
-                ].map(({ icon: Icon, val, label }) => (
-                  <div key={label} className="flex items-center gap-3 bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 backdrop-blur-sm">
-                    <Icon className="w-4 h-4 text-blue-200" />
-                    <div>
-                      <div className="text-xl font-black leading-none">{val}</div>
-                      <div className="text-[10px] text-blue-200 mt-0.5">{label}</div>
-                    </div>
+              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                {/* Left Column: Headline, subtext, actions */}
+                <div className="lg:col-span-7 space-y-5">
+                  <div className="inline-flex items-center gap-2 bg-white/15 border border-white/25 backdrop-blur-md rounded-full px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs">
+                    <Sparkles className="w-3.5 h-3.5 text-blue-200" />
+                    <span>Modern Inspection Template Engine</span>
                   </div>
-                ))}
+
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-[1.15] tracking-tight text-white">
+                    Inspect Templates &amp; Defect Library
+                  </h1>
+
+                  <p className="text-sm sm:text-base text-blue-100 max-w-xl leading-relaxed font-normal">
+                    Import, validate, and customize Spectora inspection templates with instant SheetJS
+                    parsing and AI-assisted defect enrichment via NVIDIA NIM.
+                  </p>
+
+                  <div className="flex flex-wrap items-center gap-3 pt-2">
+                    <button
+                      onClick={() => setActiveTab('import')}
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-blue-700 font-bold text-sm shadow-md hover:bg-blue-50 hover:shadow-lg transition-all active:scale-[0.98]"
+                    >
+                      <Upload className="w-4 h-4 text-blue-600" /> Import Spectora File
+                    </button>
+                    <button
+                      onClick={handleLoadDemo}
+                      className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 backdrop-blur-sm text-white font-semibold text-sm transition-all active:scale-[0.98]"
+                    >
+                      <FileSpreadsheet className="w-4 h-4 text-blue-200" /> Load Sample
+                    </button>
+                  </div>
+                </div>
+
+                {/* Right Column: 2x2 Glassmorphic Stat Metrics - perfectly fills the hero banner! */}
+                <div className="lg:col-span-5 grid grid-cols-2 gap-4">
+                  {[
+                    { icon: FileText,      val: templates.length, label: 'Active Templates', detail: 'Ready for use',   color: 'from-blue-500/25 to-blue-600/15' },
+                    { icon: Layers,        val: stats.s,          label: 'Total Sections',   detail: 'Categories',       color: 'from-sky-500/25 to-sky-600/15' },
+                    { icon: FolderTree,    val: stats.it,         label: 'Checklist Items',  detail: 'Inspection items', color: 'from-indigo-500/25 to-indigo-600/15' },
+                    { icon: AlertTriangle, val: stats.de,         label: 'Defects Library',  detail: 'AI ready',         color: 'from-amber-500/25 to-amber-600/15' },
+                  ].map(({ icon: Icon, val, label, detail, color }) => (
+                    <div
+                      key={label}
+                      className={`relative overflow-hidden bg-gradient-to-br ${color} bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 flex flex-col justify-between shadow-sm transition-all hover:bg-white/15`}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="p-2.5 rounded-xl bg-white/20 text-white shadow-xs">
+                          <Icon className="w-4 h-4" />
+                        </span>
+                        <span className="text-[11px] font-semibold text-blue-100 bg-white/15 px-2.5 py-0.5 rounded-full">
+                          {detail}
+                        </span>
+                      </div>
+                      <div>
+                        <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">{val}</div>
+                        <div className="text-xs font-semibold text-blue-100 mt-1">{label}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* list header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-lg font-bold text-slate-800">Your Templates</h2>
-                <p className="text-xs text-slate-400 mt-0.5">Manage, duplicate, edit, or export your inspection libraries</p>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Inspection Templates</h2>
+                <p className="text-sm text-slate-500 mt-0.5">Manage, duplicate, edit, or export your inspection libraries</p>
               </div>
-              <div className="relative">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Search templates…"
-                  className="pl-9 pr-3 py-2 text-xs rounded-xl bg-white border border-slate-200 text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 w-64 shadow-xs transition-all"
-                />
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                    placeholder="Search templates…"
+                    className="pl-10 pr-4 py-2.5 text-sm rounded-xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 w-64 sm:w-72 shadow-xs transition-all"
+                  />
+                </div>
+                <Btn onClick={() => setActiveTab('import')} size="sm">
+                  <Plus className="w-4 h-4" /> Import New
+                </Btn>
               </div>
             </div>
 
             {/* template grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {templates
                 .filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()))
                 .map((tpl, idx) => {
                   const sc = tpl.sections.length;
                   const ic = tpl.sections.reduce((a, s) => a + s.items.length, 0);
-                  const cc = tpl.sections.reduce((a, s) => a + s.items.reduce((b, i) => b + i.comments.length, 0), 0);
+                  const dc = tpl.sections.reduce((a, s) => a + s.items.reduce((b, i) => b + i.comments.filter(c => c.commentType === 'defect').length, 0), 0);
                   return (
-                    <Card key={idx} hover className="p-5 flex flex-col gap-4">
+                    <Card key={idx} hover className="p-6 flex flex-col justify-between gap-5 border border-slate-200/90 shadow-sm">
                       <div>
-                        <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-start justify-between gap-2 mb-3">
                           <Badge variant="blue">{tpl.sourcePlatform || 'Spectora'}</Badge>
-                          <span className="text-[10px] text-slate-400 font-mono">{tpl.sourceFile || 'custom'}</span>
+                          <span className="text-xs text-slate-400 font-mono bg-slate-100 px-2.5 py-1 rounded-md truncate max-w-[170px]" title={tpl.sourceFile || 'custom.xlsx'}>
+                            {tpl.sourceFile || 'custom.xlsx'}
+                          </span>
                         </div>
-                        <h3 className="text-sm font-bold text-slate-800 leading-snug group-hover:text-blue-600 transition-colors">
+                        <h3 className="text-base font-bold text-slate-900 leading-snug group-hover:text-blue-600 transition-colors">
                           {tpl.name}
                         </h3>
-                        {/* mini stats bar */}
-                        <div className="mt-3 grid grid-cols-3 divide-x divide-slate-100 rounded-xl bg-slate-50 border border-slate-100 overflow-hidden">
-                          {[['Sections', sc], ['Items', ic], ['Comments', cc]].map(([label, val]) => (
-                            <div key={label as string} className="py-2 text-center">
-                              <div className="text-base font-bold text-slate-800">{val}</div>
-                              <div className="text-[9px] uppercase tracking-wider text-slate-400 font-semibold mt-0.5">{label}</div>
+                        {/* 3-column stats bar */}
+                        <div className="mt-4 grid grid-cols-3 divide-x divide-slate-200 rounded-xl bg-slate-50/80 border border-slate-200 overflow-hidden">
+                          {[
+                            ['Sections', sc],
+                            ['Items', ic],
+                            ['Defects', dc],
+                          ].map(([label, val]) => (
+                            <div key={label as string} className="py-2.5 px-2 text-center">
+                              <div className="text-lg font-bold text-slate-800">{val}</div>
+                              <div className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mt-0.5">{label}</div>
                             </div>
                           ))}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
-                        <Btn onClick={() => { setActiveTemplateIndex(idx); setSelectedSectionIndex(0); setSelectedItemIndex(0); setActiveTab('editor'); }} className="flex-1 justify-center">
-                          <Edit3 className="w-3.5 h-3.5" /> Open Studio
+                      <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
+                        <Btn onClick={() => { setActiveTemplateIndex(idx); setSelectedSectionIndex(0); setSelectedItemIndex(0); setActiveTab('editor'); }} className="flex-1 justify-center py-2.5">
+                          <Edit3 className="w-4 h-4" /> Open in Studio
                         </Btn>
-                        <Btn variant="secondary" size="sm" onClick={() => handleDuplicateTemplate(idx)} title="Duplicate"><Copy className="w-3.5 h-3.5" /></Btn>
-                        <Btn variant="secondary" size="sm" onClick={() => handleExportJson(tpl)} title="Export JSON"><Download className="w-3.5 h-3.5" /></Btn>
-                        <Btn variant="danger" size="sm" onClick={() => handleDeleteTemplate(idx)} title="Delete"><Trash2 className="w-3.5 h-3.5" /></Btn>
+                        <Btn variant="secondary" size="sm" onClick={() => handleDuplicateTemplate(idx)} title="Duplicate"><Copy className="w-4 h-4" /></Btn>
+                        <Btn variant="secondary" size="sm" onClick={() => handleExportJson(tpl)} title="Export JSON"><Download className="w-4 h-4" /></Btn>
+                        <Btn variant="danger" size="sm" onClick={() => handleDeleteTemplate(idx)} title="Delete"><Trash2 className="w-4 h-4" /></Btn>
                       </div>
                     </Card>
                   );
                 })}
+
+              {/* Quick Import card to balance grid */}
+              <div
+                onClick={() => setActiveTab('import')}
+                className="rounded-2xl border-2 border-dashed border-slate-200 hover:border-blue-400 bg-white/50 hover:bg-blue-50/40 p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 group min-h-[240px]"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 group-hover:border-blue-300 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center text-slate-500 transition-all shadow-xs mb-3">
+                  <Plus className="w-6 h-6" />
+                </div>
+                <h3 className="text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
+                  Import Another Template
+                </h3>
+                <p className="text-xs text-slate-400 mt-1 max-w-[200px]">
+                  Upload a Spectora .xlsx or .csv spreadsheet to expand your inspection library
+                </p>
+              </div>
             </div>
           </div>
         )}
@@ -397,45 +463,67 @@ export default function Home() {
             IMPORT TAB
         ══════════════════════════════════════════════════ */}
         {activeTab === 'import' && (
-          <div className="space-y-6 animate-fade-up">
+          <div className="space-y-8 animate-fade-up">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h1 className="text-2xl font-bold text-slate-800">Spectora Template Importer</h1>
-                <p className="text-xs text-slate-400 mt-1">Upload .xls / .xlsx exports — automated schema validation & category mapping.</p>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Spectora Template Importer</h1>
+                <p className="text-sm text-slate-500 mt-1">Upload .xls / .xlsx exports — automated SheetJS parsing, schema validation &amp; category mapping.</p>
               </div>
-              <div className="flex items-center gap-2">
-                <Btn variant="secondary" size="sm">
-                  <a href="/samples/spectora-residential-sample.xlsx" download className="flex items-center gap-1.5">
-                    <Download className="w-3.5 h-3.5 text-blue-500" /> Sample .xlsx
+              <div className="flex items-center gap-2.5">
+                <Btn variant="secondary" size="md">
+                  <a href="/samples/spectora-residential-sample.xlsx" download className="flex items-center gap-2">
+                    <Download className="w-4 h-4 text-blue-600" /> Download Sample .xlsx
                   </a>
                 </Btn>
-                <Btn onClick={handleLoadDemo} size="sm"><Zap className="w-3.5 h-3.5" /> Load Demo</Btn>
+                <Btn onClick={handleLoadDemo} size="md"><Zap className="w-4 h-4" /> Load Demo Template</Btn>
               </div>
             </div>
 
             {!importedPreview && (
-              <Card className="p-12 text-center">
-                <div className="flex flex-col items-center gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-500 shadow-inner">
-                    <FileSpreadsheet className="w-8 h-8" />
+              <div className="space-y-6">
+                <div className="p-12 sm:p-16 text-center rounded-3xl border-2 border-dashed border-blue-200 bg-white hover:bg-blue-50/30 transition-all duration-200 shadow-sm flex flex-col items-center gap-5">
+                  <div className="w-20 h-20 rounded-3xl bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-600 shadow-inner">
+                    <FileSpreadsheet className="w-10 h-10" />
                   </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-slate-700">Drop your Spectora file here</h3>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Supports <span className="text-blue-600 font-medium">.xlsx</span>, <span className="text-blue-600 font-medium">.xls</span>, or <span className="text-blue-600 font-medium">.csv</span>
+                  <div className="space-y-1.5 max-w-md">
+                    <h3 className="text-lg font-bold text-slate-800">Drop your Spectora inspection template here</h3>
+                    <p className="text-xs sm:text-sm text-slate-500">
+                      Supports <span className="text-blue-600 font-semibold">.xlsx</span>, <span className="text-blue-600 font-semibold">.xls</span>, or <span className="text-blue-600 font-semibold">.csv</span> files exported directly from Spectora
                     </p>
                   </div>
-                  <label className="cursor-pointer">
-                    <Btn variant="primary" onClick={() => {}}>
-                      <Upload className="w-4 h-4" /> Browse File
+                  <div className="flex items-center gap-2 pt-1">
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-mono font-medium">.XLSX</span>
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-mono font-medium">.XLS</span>
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-mono font-medium">.CSV</span>
+                  </div>
+                  <label className="cursor-pointer mt-2">
+                    <Btn variant="primary" size="lg" onClick={() => {}}>
+                      <Upload className="w-4 h-4" /> Choose File to Upload
                     </Btn>
                     <input type="file" accept=".xls,.xlsx,.csv" className="hidden"
                       onChange={e => e.target.files?.[0] && handleFileUpload(e.target.files[0])} />
                   </label>
-                  {uploadLoading && <div className="flex items-center gap-2 text-xs text-blue-500"><RefreshCw className="w-4 h-4 animate-spin-slow" /> Parsing with SheetJS…</div>}
+                  {uploadLoading && <div className="flex items-center gap-2 text-sm text-blue-600 font-medium"><RefreshCw className="w-4 h-4 animate-spin-slow" /> Parsing spreadsheet with SheetJS…</div>}
                   {importStatusMessage && <p className="text-xs text-red-500 font-medium">{importStatusMessage}</p>}
                 </div>
-              </Card>
+
+                {/* 3 feature highlight cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  {[
+                    { icon: Layers, title: 'Hierarchy Mapping', desc: 'Automatically maps Spectora multi-level categories into Sections, Checklist Items, and Defect narratives.' },
+                    { icon: ShieldCheck, title: 'Instant Schema Validation', desc: 'Pre-flight checks verify required columns, data types, and flags empty fields with zero data loss.' },
+                    { icon: Sparkles, title: 'AI Defect Enrichment', desc: 'Imported findings can be immediately enhanced via NVIDIA NIM Llama-3.2 vision & language model.' },
+                  ].map(({ icon: Icon, title, desc }) => (
+                    <Card key={title} className="p-5 space-y-2 border border-slate-200/90 shadow-xs">
+                      <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center mb-3">
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <h4 className="text-sm font-bold text-slate-800">{title}</h4>
+                      <p className="text-xs text-slate-500 leading-relaxed">{desc}</p>
+                    </Card>
+                  ))}
+                </div>
+              </div>
             )}
 
             {importedPreview && (
@@ -685,47 +773,108 @@ export default function Home() {
             AI COPILOT TAB
         ══════════════════════════════════════════════════ */}
         {activeTab === 'ai' && (
-          <div className="max-w-2xl mx-auto animate-fade-up">
-            <Card className="p-6 space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-500">
-                  <Sparkles className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-base font-bold text-slate-800">NVIDIA NIM Inspection Copilot</h2>
-                    <Badge variant="green">Active</Badge>
+          <div className="space-y-8 animate-fade-up">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">NVIDIA NIM AI Copilot</h1>
+              <p className="text-sm text-slate-500 mt-1">Inspection narrative polishing, defect severity reasoning &amp; liability-conscious reporting.</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Left Column: Interactive Playground */}
+              <div className="lg:col-span-7 space-y-6">
+                <Card className="p-6 sm:p-7 space-y-6 border border-slate-200/90 shadow-sm">
+                  <div className="flex items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+                        <Sparkles className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h2 className="text-base font-bold text-slate-900">Observation Assistant</h2>
+                          <Badge variant="green">Online</Badge>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-0.5">Model: meta/llama-3.2-11b-vision-instruct</p>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Model: <code className="text-blue-600 bg-blue-50 px-1 rounded text-[10px]">meta/llama-3.2-11b-vision-instruct</code>
-                  </p>
-                </div>
+
+                  {/* Preset observation pills */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Quick Sample Findings</label>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { label: 'Roof Decking Leak', text: 'cracked shingles near chimney, flashing looks rusted and water stains on plywood decking underneath' },
+                        { label: 'Double-Tapped Breaker', text: 'two conductor wires connected to single 20-amp square D circuit breaker in main distribution panel' },
+                        { label: 'P-Trap Corrosion', text: 'galvanized steel drain trap under secondary bathroom vanity shows mineral buildup and active moisture weep' },
+                      ].map(({ label, text }) => (
+                        <button
+                          key={label}
+                          onClick={() => {
+                            const el = document.getElementById('ai-input') as HTMLTextAreaElement;
+                            if (el) el.value = text;
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 text-xs text-slate-600 hover:text-blue-700 font-medium transition-colors"
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Inspector Field Notes</label>
+                    <textarea id="ai-input" rows={4} defaultValue="cracked shingles near chimney, flashing looks rusted and water stains on plywood decking underneath"
+                      className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 leading-relaxed resize-none transition-all"
+                    />
+                    <div className="flex flex-wrap items-center gap-3 pt-1">
+                      <Btn onClick={() => { const el = document.getElementById('ai-input') as HTMLTextAreaElement; if (el) triggerAI(0, 0, 0, el.value, 'rewrite'); }}>
+                        <Sparkles className="w-4 h-4" /> Professional Rewrite
+                      </Btn>
+                      <Btn variant="secondary" onClick={() => { const el = document.getElementById('ai-input') as HTMLTextAreaElement; if (el) triggerAI(0, 0, 0, el.value, 'suggest'); }}>
+                        <Zap className="w-4 h-4 text-amber-500" /> Expand Defect &amp; Action
+                      </Btn>
+                    </div>
+                  </div>
+                </Card>
               </div>
 
-              <div className="rounded-xl bg-blue-50 border border-blue-100 p-4 text-xs text-slate-600 space-y-2">
-                <p className="font-semibold text-slate-800">✨ Capabilities</p>
-                <ul className="list-disc pl-4 space-y-1 text-slate-500">
-                  <li><strong className="text-slate-700">Professional Rewrite</strong> — Polishes rough notes into objective, liability-conscious report phrasing.</li>
-                  <li><strong className="text-slate-700">Defect Expansion</strong> — Turns shorthand into complete observations with safety risks and contractor recommendations.</li>
-                  <li><strong className="text-slate-700">Homeowner Summary</strong> — Translates complex findings into clear, jargon-free overviews.</li>
-                </ul>
-              </div>
+              {/* Right Column: Capabilities & Reference */}
+              <div className="lg:col-span-5 space-y-6">
+                <Card className="p-6 space-y-4 border border-slate-200/90 shadow-sm">
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-indigo-500" /> NIM Copilot Capabilities
+                  </h3>
+                  <div className="space-y-3 text-xs text-slate-600">
+                    <div className="p-3.5 rounded-xl bg-blue-50/60 border border-blue-100 space-y-1">
+                      <div className="font-semibold text-blue-900">1. Liability Reduction</div>
+                      <div className="text-slate-600">Converts subjective claims into standard factual observations following InterNACHI SOP.</div>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-amber-50/60 border border-amber-100 space-y-1">
+                      <div className="font-semibold text-amber-900">2. Contractor Recommendations</div>
+                      <div className="text-slate-600">Specifies precise qualified trade (e.g. licensed roofing contractor, master electrician).</div>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-emerald-50/60 border border-emerald-100 space-y-1">
+                      <div className="font-semibold text-emerald-900">3. Plain English Summaries</div>
+                      <div className="text-slate-600">Ensures home buyers understand urgency without causing unnecessary panic.</div>
+                    </div>
+                  </div>
+                </Card>
 
-              <div className="space-y-3">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Test Observation Prompt</label>
-                <textarea id="ai-input" rows={4} defaultValue="cracked shingles near chimney, flashing looks rusted and water stains on plywood decking underneath"
-                  className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 leading-relaxed resize-none"
-                />
-                <div className="flex items-center gap-2">
-                  <Btn onClick={() => { const el = document.getElementById('ai-input') as HTMLTextAreaElement; if (el) triggerAI(0, 0, 0, el.value, 'rewrite'); }}>
-                    <Sparkles className="w-4 h-4" /> AI Rewrite
-                  </Btn>
-                  <Btn variant="secondary" onClick={() => { const el = document.getElementById('ai-input') as HTMLTextAreaElement; if (el) triggerAI(0, 0, 0, el.value, 'suggest'); }}>
-                    <Zap className="w-4 h-4 text-amber-500" /> Expand Defect
-                  </Btn>
-                </div>
+                <Card className="p-6 space-y-3 border border-slate-200/90 shadow-sm bg-gradient-to-br from-slate-50 to-white">
+                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Inference Specs</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="p-3 rounded-xl bg-white border border-slate-200">
+                      <span className="text-slate-400 block text-[10px]">Provider</span>
+                      <span className="font-bold text-slate-800">NVIDIA NIM</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white border border-slate-200">
+                      <span className="text-slate-400 block text-[10px]">Latency</span>
+                      <span className="font-bold text-emerald-600">&lt; 400ms</span>
+                    </div>
+                  </div>
+                </Card>
               </div>
-            </Card>
+            </div>
           </div>
         )}
       </main>
