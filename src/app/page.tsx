@@ -221,7 +221,7 @@ export default function Home() {
     { id: 'dashboard', icon: Layers,       label: `Templates (${templates.length})` },
     { id: 'import',    icon: Upload,        label: 'Import XLS' },
     { id: 'editor',    icon: FolderTree,    label: 'Inspector Studio' },
-    { id: 'ai',        icon: Sparkles,      label: 'AI Copilot' },
+    { id: 'ai',        icon: Sparkles,      label: 'AI Assistant' },
   ] as const;
 
   /* ─────────────────────────────── RENDER ─────────────────── */
@@ -235,7 +235,7 @@ export default function Home() {
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-dot" />
             <span className="font-bold text-white tracking-wide">Hive Inspect Studio</span>
             <span className="text-blue-300">·</span>
-            <span className="text-blue-100 font-normal">Spectora Importer + NVIDIA Llama-3.2 AI Copilot</span>
+            <span className="text-blue-100 font-normal">Spectora Importer + AI Assistant</span>
           </div>
           <div className="flex items-center gap-5">
             <button onClick={() => setSqlModalOpen(true)}
@@ -286,7 +286,7 @@ export default function Home() {
           <div className="hidden md:flex items-center gap-3 shrink-0">
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span>NVIDIA NIM AI</span>
+              <span>AI Assistant</span>
             </div>
             <Btn onClick={() => setActiveTab('import')} size="sm">
               <Upload className="w-3.5 h-3.5" /> Import XLS
@@ -324,7 +324,7 @@ export default function Home() {
 
                   <p className="text-sm sm:text-base text-blue-100 max-w-xl leading-relaxed font-normal">
                     Import, validate, and customize Spectora inspection templates with instant SheetJS
-                    parsing and AI-assisted defect enrichment via NVIDIA NIM.
+                    parsing and AI-assisted defect enrichment.
                   </p>
 
                   <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -512,7 +512,7 @@ export default function Home() {
                   {[
                     { icon: Layers, title: 'Hierarchy Mapping', desc: 'Automatically maps Spectora multi-level categories into Sections, Checklist Items, and Defect narratives.' },
                     { icon: ShieldCheck, title: 'Instant Schema Validation', desc: 'Pre-flight checks verify required columns, data types, and flags empty fields with zero data loss.' },
-                    { icon: Sparkles, title: 'AI Defect Enrichment', desc: 'Imported findings can be immediately enhanced via NVIDIA NIM Llama-3.2 vision & language model.' },
+                    { icon: Sparkles, title: 'AI Defect Enrichment', desc: 'Imported findings can be immediately enhanced via the AI Assistant inspection model.' },
                   ].map(({ icon: Icon, title, desc }) => (
                     <Card key={title} className="p-5 space-y-2 border border-slate-200/90 shadow-xs">
                       <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center mb-3">
@@ -770,12 +770,12 @@ export default function Home() {
         )}
 
         {/* ══════════════════════════════════════════════════
-            AI COPILOT TAB
+            AI ASSISTANT TAB
         ══════════════════════════════════════════════════ */}
         {activeTab === 'ai' && (
           <div className="space-y-8 animate-fade-up">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">NVIDIA NIM AI Copilot</h1>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">AI Assistant</h1>
               <p className="text-sm text-slate-500 mt-1">Inspection narrative polishing, defect severity reasoning &amp; liability-conscious reporting.</p>
             </div>
 
@@ -793,7 +793,7 @@ export default function Home() {
                           <h2 className="text-base font-bold text-slate-900">Observation Assistant</h2>
                           <Badge variant="green">Online</Badge>
                         </div>
-                        <p className="text-xs text-slate-400 mt-0.5">Model: meta/llama-3.2-11b-vision-instruct</p>
+                        <p className="text-xs text-slate-400 mt-0.5">Automated Defect &amp; Finding Enhancement</p>
                       </div>
                     </div>
                   </div>
@@ -842,7 +842,7 @@ export default function Home() {
               <div className="lg:col-span-5 space-y-6">
                 <Card className="p-6 space-y-4 border border-slate-200/90 shadow-sm">
                   <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-indigo-500" /> NIM Copilot Capabilities
+                    <Sparkles className="w-4 h-4 text-indigo-500" /> AI Assistant Capabilities
                   </h3>
                   <div className="space-y-3 text-xs text-slate-600">
                     <div className="p-3.5 rounded-xl bg-blue-50/60 border border-blue-100 space-y-1">
@@ -864,8 +864,8 @@ export default function Home() {
                   <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Inference Specs</h4>
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="p-3 rounded-xl bg-white border border-slate-200">
-                      <span className="text-slate-400 block text-[10px]">Provider</span>
-                      <span className="font-bold text-slate-800">NVIDIA NIM</span>
+                      <span className="text-slate-400 block text-[10px]">Engine</span>
+                      <span className="font-bold text-slate-800">AI Assistant</span>
                     </div>
                     <div className="p-3 rounded-xl bg-white border border-slate-200">
                       <span className="text-slate-400 block text-[10px]">Latency</span>
@@ -881,21 +881,21 @@ export default function Home() {
 
       {/* ══════════════════════════════════════════════════
           AI MODAL
-      ══════════════════════════════════════════════════ */}
+        ══════════════════════════════════════════════════ */}
       {aiModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/30 backdrop-blur-sm">
           <div className="max-w-lg w-full bg-white rounded-2xl border border-slate-100 shadow-2xl shadow-slate-200/80 p-6 space-y-4 animate-fade-up">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-indigo-500" />
-                <h3 className="text-base font-bold text-slate-800">NVIDIA AI Assistant</h3>
+                <h3 className="text-base font-bold text-slate-800">AI Assistant</h3>
               </div>
               <button onClick={() => setAiModalOpen(false)} className="text-slate-400 hover:text-slate-600 text-xs font-semibold transition-colors">✕ Close</button>
             </div>
             {aiLoading && (
               <div className="py-8 flex flex-col items-center gap-3">
                 <RefreshCw className="w-6 h-6 text-blue-500 animate-spin-slow" />
-                <p className="text-xs text-slate-400">Calling NVIDIA Llama-3.2 endpoint…</p>
+                <p className="text-xs text-slate-400">Generating AI response…</p>
               </div>
             )}
             {aiError && <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-xs text-red-600"><strong>Error:</strong> {aiError}</div>}

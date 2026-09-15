@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Hive Inspect — Template Importer & AI Inspector Studio",
   description:
-    "Enterprise template migration engine for Spectora, visual template editor, and AI defect copilot powered by NVIDIA NIM.",
+    "Enterprise template migration engine for Spectora, visual template editor, and AI defect assistant.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
