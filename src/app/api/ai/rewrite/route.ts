@@ -185,20 +185,27 @@ const RETIRED_MODELS = new Set([
 ]);
 
 async function callNvidia(apiKey: string, prompt: string): Promise<string> {
-  let configuredModel = process.env.NVIDIA_MODEL?.trim();
+  let configuredPrimary = process.env.NVIDIA_MODEL?.trim() || 'openai/gpt-oss-20b';
+  let configuredBackup = process.env.NVIDIA_BACKUP_MODEL?.trim() || 'z-ai/glm-5.3';
 
-  // If configured model is known to be sunset/retired, swap to active default
-  if (!configuredModel || RETIRED_MODELS.has(configuredModel)) {
-    configuredModel = DEFAULT_NVIDIA_MODELS[0];
-  }
+  if (RETIRED_MODELS.has(configuredPrimary)) configuredPrimary = 'openai/gpt-oss-20b';
+  if (RETIRED_MODELS.has(configuredBackup)) configuredBackup = 'z-ai/glm-5.3';
 
-  // List of models to try in order
-  const modelsToTry = [configuredModel, ...DEFAULT_NVIDIA_MODELS.filter(m => m !== configuredModel)];
+  // Order: Configured Primary -> Configured Backup (z-ai/glm-5.3) -> Safety Reserve (Llama 3.2)
+  const modelsToTry = Array.from(new Set([
+    configuredPrimary,
+    configuredBackup,
+    ...DEFAULT_NVIDIA_MODELS,
+  ]));
 
   let lastError: Error | null = null;
 
   for (const model of modelsToTry) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 16000); // 16s per-model timeout
+
     try {
+      console.log(`[NVIDIA AI] Requesting inspection rewrite from: ${model}`);
       const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -211,20 +218,25 @@ async function callNvidia(apiKey: string, prompt: string): Promise<string> {
           temperature: 0.2,
           max_tokens: 1500,
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.text();
-        // If 410 (Gone), 404 (Not Found), or model retired/unavailable, continue to fallback
+        // If 410 (Gone), 404 (Not Found), 429 (Rate Limit), 503 (Unavailable), or model retired, fallback to backup
         if (
           response.status === 410 ||
           response.status === 404 ||
+          response.status === 429 ||
+          response.status === 503 ||
           errorData.includes('no longer available') ||
           errorData.includes('end of life') ||
           errorData.includes('reached its end') ||
           errorData.includes('Not found for account')
         ) {
-          console.warn(`[NVIDIA AI] Model ${model} is unavailable (${response.status}). Trying fallback...`);
+          console.warn(`[NVIDIA AI] Model ${model} unavailable (${response.status}). Switching to backup...`);
           lastError = new Error(`NVIDIA model ${model} unavailable: ${errorData}`);
           continue;
         }
@@ -242,6 +254,9 @@ async function callNvidia(apiKey: string, prompt: string): Promise<string> {
         if (content) return content;
       }
     } catch (err: any) {
+      clearTimeout(timeoutId);
+      const isTimeout = err.name === 'AbortError' || err.message?.includes('aborted');
+      console.warn(`[NVIDIA AI] Model ${model} ${isTimeout ? 'timed out' : 'encountered error'}: ${err.message}. Switching to backup...`);
       lastError = err;
       // If it's an authorization failure, throw immediately without trying fallbacks
       if (err.message?.includes('(401)') || err.message?.includes('(403)')) {
