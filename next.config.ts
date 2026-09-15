@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Disable Turbopack to avoid the Windows 0xc0000142 DLL crash in PostCSS worker
+  turbopack: undefined,
 };
 
 export default nextConfig;
