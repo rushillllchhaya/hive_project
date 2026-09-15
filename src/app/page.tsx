@@ -373,19 +373,19 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#0a0a0f] text-[#f0f0f5] flex flex-col font-sans selection:bg-amber-500/30 selection:text-amber-200">
-      {/* Top Banner for Supabase / Cloud persistence setup */}
-      <div className="bg-gradient-to-r from-amber-500/10 via-amber-600/10 to-transparent border-b border-amber-500/20 px-4 py-2 flex items-center justify-between text-xs">
+    <div className="min-h-screen w-full bg-[#f0f6ff] text-[#0f172a] flex flex-col font-sans selection:bg-blue-200 selection:text-blue-900">
+      {/* Top Banner */}
+      <div className="bg-gradient-to-r from-blue-600/8 via-blue-500/5 to-transparent border-b border-blue-200/60 px-4 py-2 flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
-          <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-medium text-amber-300">Hive Inspect Studio</span>
-          <span className="text-zinc-400">•</span>
-          <span className="text-zinc-300">Spectora Importer + NVIDIA Llama-3.2 Vision-Instruct AI Copilot</span>
+          <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="font-semibold text-blue-700">Hive Inspect Studio</span>
+          <span className="text-slate-400">•</span>
+          <span className="text-slate-500">Spectora Importer + NVIDIA Llama-3.2 Vision-Instruct AI Copilot</span>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setSqlModalOpen(true)}
-            className="text-amber-400 hover:text-amber-300 underline font-medium flex items-center gap-1"
+            className="text-blue-600 hover:text-blue-700 underline font-medium flex items-center gap-1"
           >
             <Database className="w-3.5 h-3.5" />
             Supabase SQL Setup
@@ -394,7 +394,7 @@ export default function Home() {
             href="https://github.com/rushillllchhaya/hive_project"
             target="_blank"
             rel="noreferrer"
-            className="text-zinc-400 hover:text-zinc-200 flex items-center gap-1"
+            className="text-slate-400 hover:text-slate-600 flex items-center gap-1"
           >
             GitHub
             <ExternalLink className="w-3 h-3" />
@@ -403,32 +403,32 @@ export default function Home() {
       </div>
 
       {/* Main Header / Navigation */}
-      <header className="sticky top-0 z-40 bg-[#12121a]/90 backdrop-blur-xl border-b border-white/5 px-6 py-3.5 flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-blue-100 px-6 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20 text-black font-black text-lg">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-md shadow-blue-300/40 text-white font-black text-lg">
               H
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-base tracking-tight text-white">Hive Inspect</span>
-                <span className="px-2 py-0.5 text-[10px] font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30 rounded-full">
+                <span className="font-bold text-base tracking-tight text-slate-800">Hive Inspect</span>
+                <span className="px-2 py-0.5 text-[10px] font-semibold bg-blue-50 text-blue-600 border border-blue-200 rounded-full">
                   Enterprise
                 </span>
               </div>
-              <p className="text-[11px] text-zinc-400">Template Importer & AI Inspector Studio</p>
+              <p className="text-[11px] text-slate-400">Template Importer & AI Inspector Studio</p>
             </div>
           </div>
         </div>
 
         {/* Tab Navigation Buttons */}
-        <nav className="flex items-center gap-1 bg-white/[0.03] p-1 rounded-xl border border-white/5">
+        <nav className="flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200">
           <button
             onClick={() => setActiveTab('dashboard')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 ${
               activeTab === 'dashboard'
-                ? 'bg-amber-500 text-black font-semibold shadow-md shadow-amber-500/25'
-                : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                ? 'bg-blue-600 text-white font-semibold shadow-md shadow-blue-300/40'
+                : 'text-slate-500 hover:text-slate-800 hover:bg-white/80'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
@@ -438,8 +438,8 @@ export default function Home() {
             onClick={() => setActiveTab('import')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 ${
               activeTab === 'import'
-                ? 'bg-amber-500 text-black font-semibold shadow-md shadow-amber-500/25'
-                : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                ? 'bg-blue-600 text-white font-semibold shadow-md shadow-blue-300/40'
+                : 'text-slate-500 hover:text-slate-800 hover:bg-white/80'
             }`}
           >
             <Upload className="w-3.5 h-3.5" />
@@ -449,8 +449,8 @@ export default function Home() {
             onClick={() => setActiveTab('editor')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 ${
               activeTab === 'editor'
-                ? 'bg-amber-500 text-black font-semibold shadow-md shadow-amber-500/25'
-                : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                ? 'bg-blue-600 text-white font-semibold shadow-md shadow-blue-300/40'
+                : 'text-slate-500 hover:text-slate-800 hover:bg-white/80'
             }`}
           >
             <FolderTree className="w-3.5 h-3.5" />
@@ -460,8 +460,8 @@ export default function Home() {
             onClick={() => setActiveTab('ai')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 ${
               activeTab === 'ai'
-                ? 'bg-amber-500 text-black font-semibold shadow-md shadow-amber-500/25'
-                : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                ? 'bg-blue-600 text-white font-semibold shadow-md shadow-blue-300/40'
+                : 'text-slate-500 hover:text-slate-800 hover:bg-white/80'
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -471,72 +471,73 @@ export default function Home() {
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6" style={{ marginLeft: 'auto', marginRight: 'auto', textAlign: 'left' }}>
         {/* ============================================================
             TAB 1: TEMPLATES DASHBOARD
         ============================================================ */}
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
             {/* Hero metrics banner */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#161622] via-[#12121a] to-[#0d0d14] border border-white/10 p-8 shadow-2xl">
-              <div className="absolute -right-16 -top-16 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-              <div className="max-w-2xl space-y-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 border border-blue-500/30 p-8 shadow-xl shadow-blue-200/60">
+              <div className="absolute -right-16 -top-16 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute right-8 bottom-0 w-48 h-48 bg-indigo-400/20 rounded-full blur-2xl pointer-events-none" />
+              <div className="max-w-2xl space-y-3 relative z-10">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 border border-white/30 text-white text-xs font-semibold">
                   <Sparkles className="w-3.5 h-3.5" />
                   Modern Inspection Template Engine
                 </div>
                 <h1 className="text-3xl font-extrabold tracking-tight text-white">
                   Inspect Templates & Defect Library
                 </h1>
-                <p className="text-sm text-zinc-400 leading-relaxed">
+                <p className="text-sm text-blue-100 leading-relaxed">
                   Import, validate, and deeply customize Spectora inspection templates. Built with instant SheetJS
                   parsing, hierarchical section mapping, and AI-assisted defect enrichment powered by NVIDIA NIM.
                 </p>
                 <div className="flex items-center gap-3 pt-2">
                   <button
                     onClick={() => setActiveTab('import')}
-                    className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2"
+                    className="px-4 py-2 rounded-xl bg-white hover:bg-blue-50 text-blue-700 font-semibold text-xs transition-all shadow-lg flex items-center gap-2"
                   >
                     <Upload className="w-4 h-4" />
                     Import Spectora File (.xls/.xlsx)
                   </button>
                   <button
                     onClick={handleLoadDemoTemplate}
-                    className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium text-xs border border-white/10 transition-all flex items-center gap-2"
+                    className="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-medium text-xs border border-white/30 transition-all flex items-center gap-2"
                   >
-                    <FileSpreadsheet className="w-4 h-4 text-amber-400" />
+                    <FileSpreadsheet className="w-4 h-4" />
                     Load Sample Template
                   </button>
                 </div>
               </div>
 
               {/* Stats Counters */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-white/5">
-                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-white/20 relative z-10">
+                <div className="p-4 rounded-xl bg-white/15 border border-white/20 backdrop-blur-sm">
                   <div className="text-2xl font-black text-white">{templates.length}</div>
-                  <div className="text-xs text-zinc-400 flex items-center gap-1.5 mt-1">
-                    <FileText className="w-3.5 h-3.5 text-amber-400" />
+                  <div className="text-xs text-blue-100 flex items-center gap-1.5 mt-1">
+                    <FileText className="w-3.5 h-3.5" />
                     Active Templates
                   </div>
                 </div>
-                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                <div className="p-4 rounded-xl bg-white/15 border border-white/20 backdrop-blur-sm">
                   <div className="text-2xl font-black text-white">{stats.totalSections}</div>
-                  <div className="text-xs text-zinc-400 flex items-center gap-1.5 mt-1">
-                    <Layers className="w-3.5 h-3.5 text-blue-400" />
+                  <div className="text-xs text-blue-100 flex items-center gap-1.5 mt-1">
+                    <Layers className="w-3.5 h-3.5" />
                     Inspection Sections
                   </div>
                 </div>
-                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                <div className="p-4 rounded-xl bg-white/15 border border-white/20 backdrop-blur-sm">
                   <div className="text-2xl font-black text-white">{stats.totalItems}</div>
-                  <div className="text-xs text-zinc-400 flex items-center gap-1.5 mt-1">
-                    <FolderTree className="w-3.5 h-3.5 text-emerald-400" />
+                  <div className="text-xs text-blue-100 flex items-center gap-1.5 mt-1">
+                    <FolderTree className="w-3.5 h-3.5" />
                     Inspection Items
                   </div>
                 </div>
-                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
-                  <div className="text-2xl font-black text-amber-400">{stats.totalDefects}</div>
-                  <div className="text-xs text-zinc-400 flex items-center gap-1.5 mt-1">
-                    <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+                <div className="p-4 rounded-xl bg-white/15 border border-white/20 backdrop-blur-sm">
+                  <div className="text-2xl font-black text-white">{stats.totalDefects}</div>
+                  <div className="text-xs text-blue-100 flex items-center gap-1.5 mt-1">
+                    <AlertTriangle className="w-3.5 h-3.5" />
                     Documented Defects
                   </div>
                 </div>
@@ -546,17 +547,17 @@ export default function Home() {
             {/* Templates List Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-bold text-white">Your Templates</h2>
-                <p className="text-xs text-zinc-400">Manage, duplicate, edit, or export your inspection libraries</p>
+                <h2 className="text-xl font-bold text-slate-800">Your Templates</h2>
+                <p className="text-xs text-slate-400">Manage, duplicate, edit, or export your inspection libraries</p>
               </div>
               <div className="relative w-full sm:w-72">
-                <Search className="w-4 h-4 absolute left-3 top-2.5 text-zinc-500" />
+                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Filter templates..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-[#161622] border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500"
+                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-white border border-blue-100 text-slate-700 placeholder-slate-400 focus:outline-none focus:border-blue-400 shadow-sm"
                 />
               </div>
             </div>
@@ -576,38 +577,38 @@ export default function Home() {
                   return (
                     <div
                       key={idx}
-                      className="group rounded-2xl bg-[#14141e] border border-white/10 p-5 hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-4 hover:shadow-xl hover:shadow-amber-500/5"
+                      className="group rounded-2xl bg-white border border-blue-100 p-5 hover:border-blue-300 transition-all flex flex-col justify-between space-y-4 hover:shadow-xl hover:shadow-blue-100/80 shadow-sm"
                     >
                       <div className="space-y-2.5">
                         <div className="flex items-center justify-between">
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/5 border border-white/10 text-zinc-300">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 border border-blue-100 text-blue-600">
                             {tpl.sourcePlatform || 'Spectora'}
                           </span>
-                          <span className="text-[11px] text-zinc-500 font-mono">
+                          <span className="text-[11px] text-slate-400 font-mono">
                             {tpl.sourceFile || 'custom-template'}
                           </span>
                         </div>
-                        <h3 className="text-base font-bold text-white group-hover:text-amber-400 transition-colors">
+                        <h3 className="text-base font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
                           {tpl.name}
                         </h3>
-                        <div className="grid grid-cols-3 gap-2 py-2 text-center bg-white/[0.02] rounded-xl border border-white/5">
+                        <div className="grid grid-cols-3 gap-2 py-2 text-center bg-slate-50 rounded-xl border border-slate-100">
                           <div>
-                            <div className="text-sm font-bold text-white">{sectionCount}</div>
-                            <div className="text-[10px] text-zinc-400 uppercase tracking-wider">Sections</div>
+                            <div className="text-sm font-bold text-slate-800">{sectionCount}</div>
+                            <div className="text-[10px] text-slate-400 uppercase tracking-wider">Sections</div>
                           </div>
                           <div>
-                            <div className="text-sm font-bold text-white">{itemCount}</div>
-                            <div className="text-[10px] text-zinc-400 uppercase tracking-wider">Items</div>
+                            <div className="text-sm font-bold text-slate-800">{itemCount}</div>
+                            <div className="text-[10px] text-slate-400 uppercase tracking-wider">Items</div>
                           </div>
                           <div>
-                            <div className="text-sm font-bold text-white">{commentCount}</div>
-                            <div className="text-[10px] text-zinc-400 uppercase tracking-wider">Comments</div>
+                            <div className="text-sm font-bold text-slate-800">{commentCount}</div>
+                            <div className="text-[10px] text-slate-400 uppercase tracking-wider">Comments</div>
                           </div>
                         </div>
                       </div>
 
                       {/* Action buttons */}
-                      <div className="pt-2 border-t border-white/5 flex items-center justify-between gap-2">
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
                         <button
                           onClick={() => {
                             setActiveTemplateIndex(idx);
@@ -615,7 +616,7 @@ export default function Home() {
                             setSelectedItemIndex(0);
                             setActiveTab('editor');
                           }}
-                          className="flex-1 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500 hover:text-black text-amber-400 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
+                          className="flex-1 py-2 rounded-xl bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-600 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 border border-blue-100 hover:border-blue-600"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
                           Open Studio
@@ -623,21 +624,21 @@ export default function Home() {
                         <button
                           onClick={() => handleDuplicateTemplate(idx)}
                           title="Deep Duplicate Template"
-                          className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white transition-all"
+                          className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-all border border-slate-100"
                         >
                           <Copy className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => handleExportJson(tpl)}
                           title="Export JSON"
-                          className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white transition-all"
+                          className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-all border border-slate-100"
                         >
                           <Download className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => handleDeleteTemplate(idx)}
                           title="Delete Template"
-                          className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500 hover:text-white text-red-400 transition-all"
+                          className="p-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-400 hover:text-red-600 transition-all border border-red-100"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -656,8 +657,8 @@ export default function Home() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-white">Spectora Template Importer</h1>
-                <p className="text-xs text-zinc-400">
+                <h1 className="text-2xl font-bold text-slate-800">Spectora Template Importer</h1>
+                <p className="text-xs text-slate-400">
                   Upload Spectora spreadsheet exports (.xls / .xlsx) with automated schema validation and category mapping.
                 </p>
               </div>
@@ -665,14 +666,14 @@ export default function Home() {
                 <a
                   href="/samples/spectora-residential-sample.xlsx"
                   download
-                  className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-zinc-300 flex items-center gap-1.5 transition-all"
+                  className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-medium text-slate-600 flex items-center gap-1.5 transition-all shadow-sm"
                 >
-                  <Download className="w-3.5 h-3.5 text-amber-400" />
+                  <Download className="w-3.5 h-3.5 text-blue-500" />
                   Download Sample .xlsx
                 </a>
                 <button
                   onClick={handleLoadDemoTemplate}
-                  className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs flex items-center gap-1.5 transition-all"
+                  className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center gap-1.5 transition-all shadow-md shadow-blue-200"
                 >
                   <Zap className="w-3.5 h-3.5" />
                   Load Sample In Importer
@@ -682,17 +683,17 @@ export default function Home() {
 
             {/* Drag & Drop Upload Card */}
             {!importedPreview && (
-              <div className="rounded-2xl border-2 border-dashed border-white/15 hover:border-amber-500/50 bg-[#12121a]/60 p-12 text-center transition-all flex flex-col items-center justify-center space-y-4">
-                <div className="h-16 w-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <div className="rounded-2xl border-2 border-dashed border-blue-200 hover:border-blue-400 bg-white/70 p-12 text-center transition-all flex flex-col items-center justify-center space-y-4 shadow-sm">
+                <div className="h-16 w-16 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-500">
                   <FileSpreadsheet className="w-8 h-8" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-base font-semibold text-white">Drop your Spectora file here</h3>
-                  <p className="text-xs text-zinc-400">
-                    Supports <span className="text-amber-300">.xlsx</span>, <span className="text-amber-300">.xls</span>, or <span className="text-amber-300">.csv</span> export files
+                  <h3 className="text-base font-semibold text-slate-700">Drop your Spectora file here</h3>
+                  <p className="text-xs text-slate-400">
+                    Supports <span className="text-blue-600 font-medium">.xlsx</span>, <span className="text-blue-600 font-medium">.xls</span>, or <span className="text-blue-600 font-medium">.csv</span> export files
                   </p>
                 </div>
-                <label className="cursor-pointer px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center gap-2">
+                <label className="cursor-pointer px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg shadow-blue-200 transition-all flex items-center gap-2">
                   <Upload className="w-4 h-4" />
                   Browse File
                   <input
@@ -707,13 +708,13 @@ export default function Home() {
                   />
                 </label>
                 {uploadLoading && (
-                  <div className="flex items-center gap-2 text-xs text-amber-400 animate-pulse">
+                  <div className="flex items-center gap-2 text-xs text-blue-500 animate-pulse">
                     <RefreshCw className="w-4 h-4 animate-spin" />
                     Parsing workbook with SheetJS...
                   </div>
                 )}
                 {importStatusMessage && (
-                  <p className="text-xs text-red-400 font-medium">{importStatusMessage}</p>
+                  <p className="text-xs text-red-500 font-medium">{importStatusMessage}</p>
                 )}
               </div>
             )}
@@ -721,27 +722,27 @@ export default function Home() {
             {/* Pre-Import Validation & Preview Screen */}
             {importedPreview && (
               <div className="space-y-6">
-                <div className="rounded-2xl bg-[#14141e] border border-white/10 p-6 space-y-5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/5">
+                <div className="rounded-2xl bg-white border border-blue-100 p-6 space-y-5 shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                     <div>
                       <div className="flex items-center gap-2">
-                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                        <h2 className="text-lg font-bold text-white">Validation & Pre-Import Review</h2>
+                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                        <h2 className="text-lg font-bold text-slate-800">Validation & Pre-Import Review</h2>
                       </div>
-                      <p className="text-xs text-zinc-400">
+                      <p className="text-xs text-slate-400">
                         File parsed successfully. Review extracted schema structure and audit logs before importing.
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setImportedPreview(null)}
-                        className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-medium text-zinc-400 transition-all"
+                        className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-medium text-slate-500 transition-all"
                       >
                         Discard
                       </button>
                       <button
                         onClick={handleConfirmImport}
-                        className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center gap-1.5"
+                        className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg shadow-blue-200 transition-all flex items-center gap-1.5"
                       >
                         <Check className="w-4 h-4" />
                         Confirm & Import to Library
@@ -752,7 +753,7 @@ export default function Home() {
                   {/* Template Name & Source */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+                      <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                         Template Name
                       </label>
                       <input
@@ -764,75 +765,75 @@ export default function Home() {
                             template: { ...importedPreview.template, name: e.target.value },
                           })
                         }
-                        className="w-full mt-1 px-3.5 py-2 rounded-xl bg-[#1a1a26] border border-white/10 text-white text-xs font-semibold focus:outline-none focus:border-amber-500"
+                        className="w-full mt-1 px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-xs font-semibold focus:outline-none focus:border-blue-400"
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+                      <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                         Source File
                       </label>
                       <input
                         type="text"
                         disabled
                         value={importedPreview.template.sourceFile || 'upload.xlsx'}
-                        className="w-full mt-1 px-3.5 py-2 rounded-xl bg-[#12121a] border border-white/5 text-zinc-400 text-xs font-mono"
+                        className="w-full mt-1 px-3.5 py-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 text-xs font-mono"
                       />
                     </div>
                   </div>
 
                   {/* Summary Metric Counters */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-center">
-                      <div className="text-xl font-black text-white">
+                    <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-100 text-center">
+                      <div className="text-xl font-black text-blue-700">
                         {importedPreview.template.sections.length}
                       </div>
-                      <div className="text-[10px] text-zinc-400 uppercase tracking-wider">Sections</div>
+                      <div className="text-[10px] text-slate-400 uppercase tracking-wider">Sections</div>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-center">
-                      <div className="text-xl font-black text-white">
+                    <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-100 text-center">
+                      <div className="text-xl font-black text-blue-700">
                         {importedPreview.template.sections.reduce((acc, s) => acc + s.items.length, 0)}
                       </div>
-                      <div className="text-[10px] text-zinc-400 uppercase tracking-wider">Items</div>
+                      <div className="text-[10px] text-slate-400 uppercase tracking-wider">Items</div>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-center">
-                      <div className="text-xl font-black text-white">
+                    <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-100 text-center">
+                      <div className="text-xl font-black text-blue-700">
                         {importedPreview.template.sections.reduce(
                           (acc, s) => acc + s.items.reduce((iAcc, item) => iAcc + item.comments.length, 0),
                           0
                         )}
                       </div>
-                      <div className="text-[10px] text-zinc-400 uppercase tracking-wider">Comments</div>
+                      <div className="text-[10px] text-slate-400 uppercase tracking-wider">Comments</div>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-center">
-                      <div className="text-xl font-black text-emerald-400">
+                    <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-100 text-center">
+                      <div className="text-xl font-black text-emerald-600">
                         {importedPreview.logs.filter((l) => l.status === 'success').length} /{' '}
                         {importedPreview.logs.length}
                       </div>
-                      <div className="text-[10px] text-zinc-400 uppercase tracking-wider">Audit Validations</div>
+                      <div className="text-[10px] text-slate-400 uppercase tracking-wider">Audit Validations</div>
                     </div>
                   </div>
 
                   {/* Validation Log Output */}
                   <div className="space-y-2 pt-2">
-                    <h4 className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
-                      <ShieldCheck className="w-4 h-4 text-amber-400" />
+                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-blue-500" />
                       Parsing & Normalization Audit Logs
                     </h4>
-                    <div className="max-h-48 overflow-y-auto rounded-xl bg-[#0e0e16] border border-white/5 p-3 space-y-1.5 text-xs font-mono">
+                    <div className="max-h-48 overflow-y-auto rounded-xl bg-slate-50 border border-slate-200 p-3 space-y-1.5 text-xs font-mono">
                       {importedPreview.logs.map((log, lIdx) => (
                         <div key={lIdx} className="flex items-start gap-2 py-0.5">
                           {log.status === 'success' && (
-                            <span className="text-emerald-400 font-bold">[OK]</span>
+                            <span className="text-emerald-600 font-bold">[OK]</span>
                           )}
                           {log.status === 'warning' && (
-                            <span className="text-amber-400 font-bold">[WARN]</span>
+                            <span className="text-amber-600 font-bold">[WARN]</span>
                           )}
                           {log.status === 'error' && (
-                            <span className="text-red-400 font-bold">[ERR]</span>
+                            <span className="text-red-500 font-bold">[ERR]</span>
                           )}
-                          <span className="text-zinc-300">{log.message}</span>
+                          <span className="text-slate-600">{log.message}</span>
                           {log.fieldName && (
-                            <span className="text-zinc-500">({log.fieldName})</span>
+                            <span className="text-slate-400">({log.fieldName})</span>
                           )}
                         </div>
                       ))}
@@ -850,19 +851,19 @@ export default function Home() {
         {activeTab === 'editor' && (
           <div className="space-y-4">
             {/* Editor Workspace Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#14141e] border border-white/10">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-blue-100 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 font-bold">
+                <div className="h-10 w-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 font-bold">
                   <FolderTree className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-base font-bold text-white">{activeTemplate?.name}</span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    <span className="text-base font-bold text-slate-800">{activeTemplate?.name}</span>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-200">
                       Live Studio
                     </span>
                   </div>
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-slate-400">
                     {activeTemplate?.sections.length || 0} Sections • Auto-saving to workspace
                   </p>
                 </div>
@@ -876,7 +877,7 @@ export default function Home() {
                     setSelectedSectionIndex(0);
                     setSelectedItemIndex(0);
                   }}
-                  className="px-3 py-1.5 rounded-xl bg-[#1a1a26] border border-white/10 text-xs text-white font-medium focus:outline-none focus:border-amber-500"
+                  className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 font-medium focus:outline-none focus:border-blue-400"
                 >
                   {templates.map((t, idx) => (
                     <option key={idx} value={idx}>
@@ -886,14 +887,14 @@ export default function Home() {
                 </select>
                 <button
                   onClick={() => handleDuplicateTemplate(activeTemplateIndex)}
-                  className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-zinc-300 flex items-center gap-1.5 transition-all"
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-600 flex items-center gap-1.5 transition-all"
                 >
                   <Copy className="w-3.5 h-3.5" />
                   Deep Duplicate
                 </button>
                 <button
                   onClick={handleAddSection}
-                  className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/20"
+                  className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shadow-blue-200"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   New Section
@@ -904,14 +905,14 @@ export default function Home() {
             {/* Split View: Tree Nav Left | Comment Cards Right */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
               {/* Left Column: Sections & Items Hierarchy */}
-              <div className="lg:col-span-4 rounded-2xl bg-[#14141e] border border-white/10 p-4 space-y-3">
+              <div className="lg:col-span-4 rounded-2xl bg-white border border-blue-100 p-4 space-y-3 shadow-sm">
                 <div className="flex items-center justify-between px-1">
-                  <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                     Inspection Sections
                   </span>
                   <button
                     onClick={handleAddSection}
-                    className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1"
+                    className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 font-medium"
                   >
                     <Plus className="w-3 h-3" />
                     Section
@@ -930,14 +931,14 @@ export default function Home() {
                           }}
                           className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-between ${
                             isSelectedSection
-                              ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20'
-                              : 'text-zinc-300 hover:bg-white/5'
+                              ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
+                              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800'
                           }`}
                         >
                           <span className="truncate">{section.name}</span>
                           <span
                             className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono ${
-                              isSelectedSection ? 'bg-black/20 text-black' : 'bg-white/10 text-zinc-400'
+                              isSelectedSection ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-400'
                             }`}
                           >
                             {section.items.length} items
@@ -946,7 +947,7 @@ export default function Home() {
 
                         {/* Nested Items under selected section */}
                         {isSelectedSection && (
-                          <div className="pl-3 py-1 space-y-1 border-l-2 border-amber-500/40 ml-2">
+                          <div className="pl-3 py-1 space-y-1 border-l-2 border-blue-300 ml-2">
                             {section.items.map((item, itemIdx) => {
                               const isSelectedItem = selectedItemIndex === itemIdx;
                               return (
@@ -955,12 +956,12 @@ export default function Home() {
                                   onClick={() => setSelectedItemIndex(itemIdx)}
                                   className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-all flex items-center justify-between ${
                                     isSelectedItem
-                                      ? 'bg-white/15 text-white font-bold'
-                                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
+                                      ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200'
+                                      : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                                   }`}
                                 >
                                   <span className="truncate">{item.name}</span>
-                                  <span className="text-[10px] text-zinc-500 font-mono">
+                                  <span className="text-[10px] text-slate-400 font-mono">
                                     {item.comments.length}
                                   </span>
                                 </button>
@@ -968,7 +969,7 @@ export default function Home() {
                             })}
                             <button
                               onClick={() => handleAddItem(secIdx)}
-                              className="w-full text-left px-2.5 py-1 text-[11px] text-amber-400/80 hover:text-amber-300 flex items-center gap-1"
+                              className="w-full text-left px-2.5 py-1 text-[11px] text-blue-500/80 hover:text-blue-600 flex items-center gap-1 font-medium"
                             >
                               <Plus className="w-3 h-3" />
                               Add item...
@@ -982,14 +983,14 @@ export default function Home() {
               </div>
 
               {/* Right Column: Comments for Selected Item */}
-              <div className="lg:col-span-8 rounded-2xl bg-[#14141e] border border-white/10 p-5 space-y-5">
+              <div className="lg:col-span-8 rounded-2xl bg-white border border-blue-100 p-5 space-y-5 shadow-sm">
                 {(() => {
                   const currentSec = activeTemplate?.sections[selectedSectionIndex];
                   const currentItem = currentSec?.items[selectedItemIndex];
 
                   if (!currentSec || !currentItem) {
                     return (
-                      <div className="p-12 text-center text-zinc-500 text-xs">
+                      <div className="p-12 text-center text-slate-400 text-xs">
                         Select a section and item on the left to view or edit comments.
                       </div>
                     );
@@ -998,20 +999,20 @@ export default function Home() {
                   return (
                     <div className="space-y-4">
                       {/* Item Header */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
                         <div>
-                          <div className="flex items-center gap-1.5 text-xs text-amber-400 font-medium">
+                          <div className="flex items-center gap-1.5 text-xs text-blue-600 font-medium">
                             <span>{currentSec.name}</span>
-                            <ChevronRight className="w-3 h-3 text-zinc-600" />
+                            <ChevronRight className="w-3 h-3 text-slate-400" />
                             <span>{currentItem.name}</span>
                           </div>
-                          <h3 className="text-base font-bold text-white mt-0.5">
+                          <h3 className="text-base font-bold text-slate-800 mt-0.5">
                             {currentItem.comments.length} Documented Findings & Boilerplate Notes
                           </h3>
                         </div>
                         <button
                           onClick={() => handleAddComment(selectedSectionIndex, selectedItemIndex)}
-                          className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs flex items-center gap-1.5 shadow-md shadow-amber-500/20 transition-all self-start"
+                          className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-blue-200 transition-all self-start"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           Add Defect / Comment
@@ -1023,7 +1024,7 @@ export default function Home() {
                         {currentItem.comments.map((comm, commIdx) => (
                           <div
                             key={commIdx}
-                            className="rounded-xl bg-[#191924] border border-white/10 p-4 space-y-3 hover:border-white/20 transition-all"
+                            className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-3 hover:border-blue-200 transition-all"
                           >
                             {/* Comment Card Header */}
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -1039,7 +1040,7 @@ export default function Home() {
                                     e.target.value
                                   )
                                 }
-                                className="bg-transparent text-sm font-bold text-white border-b border-transparent hover:border-zinc-700 focus:border-amber-500 focus:outline-none"
+                                className="bg-transparent text-sm font-bold text-slate-800 border-b border-transparent hover:border-slate-300 focus:border-blue-500 focus:outline-none"
                               />
 
                               {/* Badges & Type selection */}
@@ -1057,10 +1058,10 @@ export default function Home() {
                                   }
                                   className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md border focus:outline-none ${
                                     comm.commentType === 'defect'
-                                      ? 'bg-red-500/10 text-red-400 border-red-500/30'
+                                      ? 'bg-red-50 text-red-600 border-red-200'
                                       : comm.commentType === 'limit'
-                                      ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                                      : 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                                      ? 'bg-amber-50 text-amber-600 border-amber-200'
+                                      : 'bg-blue-50 text-blue-600 border-blue-200'
                                   }`}
                                 >
                                   <option value="defect">🔴 Defect</option>
@@ -1076,7 +1077,7 @@ export default function Home() {
                                       commIdx
                                     )
                                   }
-                                  className="p-1 rounded text-zinc-500 hover:text-red-400 transition-colors"
+                                  className="p-1 rounded text-slate-400 hover:text-red-500 transition-colors"
                                   title="Delete Comment"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -1086,7 +1087,7 @@ export default function Home() {
 
                             {/* Comment Text Area */}
                             <div>
-                              <label className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">
+                              <label className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
                                 Observation Finding Text
                               </label>
                               <textarea
@@ -1101,13 +1102,13 @@ export default function Home() {
                                     e.target.value
                                   )
                                 }
-                                className="w-full mt-1 p-2.5 rounded-xl bg-[#12121a] border border-white/5 text-xs text-zinc-200 focus:outline-none focus:border-amber-500 leading-relaxed font-sans"
+                                className="w-full mt-1 p-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-blue-400 leading-relaxed font-sans"
                               />
                             </div>
 
                             {/* Recommendation Input */}
                             <div>
-                              <label className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">
+                              <label className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
                                 Recommendation (Optional)
                               </label>
                               <input
@@ -1123,12 +1124,12 @@ export default function Home() {
                                     e.target.value
                                   )
                                 }
-                                className="w-full mt-1 p-2 rounded-xl bg-[#12121a] border border-white/5 text-xs text-zinc-300 focus:outline-none focus:border-amber-500"
+                                className="w-full mt-1 p-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-600 focus:outline-none focus:border-blue-400"
                               />
                             </div>
 
                             {/* AI Copilot Action Buttons on Comment */}
-                            <div className="pt-2 border-t border-white/5 flex flex-wrap items-center justify-between gap-2">
+                            <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
                               <div className="flex items-center gap-1.5">
                                 <button
                                   onClick={() =>
@@ -1140,7 +1141,7 @@ export default function Home() {
                                       'rewrite'
                                     )
                                   }
-                                  className="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500 hover:text-black text-amber-400 text-[11px] font-semibold transition-all flex items-center gap-1 border border-amber-500/20"
+                                  className="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-600 text-[11px] font-semibold transition-all flex items-center gap-1 border border-blue-200 hover:border-blue-600"
                                 >
                                   <Sparkles className="w-3 h-3" />
                                   AI Rewrite
@@ -1155,14 +1156,14 @@ export default function Home() {
                                       'suggest'
                                     )
                                   }
-                                  className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 text-[11px] font-semibold transition-all flex items-center gap-1 border border-white/10"
+                                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-[11px] font-semibold transition-all flex items-center gap-1 border border-slate-200"
                                 >
-                                  <Zap className="w-3 h-3 text-amber-400" />
+                                  <Zap className="w-3 h-3 text-blue-500" />
                                   Expand Defect
                                 </button>
                               </div>
 
-                              <div className="text-[10px] text-zinc-500 font-mono">
+                              <div className="text-[10px] text-slate-400 font-mono">
                                 Location: {comm.defaultLocation || 'General'}
                               </div>
                             </div>
@@ -1181,48 +1182,48 @@ export default function Home() {
             TAB 4: NVIDIA AI COPILOT WORKBENCH
         ============================================================ */}
         {activeTab === 'ai' && (
-          <div className="max-w-3xl mx-auto rounded-2xl bg-[#14141e] border border-white/10 p-6 space-y-6">
+          <div className="max-w-3xl mx-auto rounded-2xl bg-white border border-blue-100 p-6 space-y-6 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-500">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-bold text-white">NVIDIA NIM Inspection Copilot</h2>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                  <h2 className="text-lg font-bold text-slate-800">NVIDIA NIM Inspection Copilot</h2>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
                     Active
                   </span>
                 </div>
-                <p className="text-xs text-zinc-400">
-                  Model: <span className="text-amber-300 font-mono">meta/llama-3.2-11b-vision-instruct</span> via NVIDIA API
+                <p className="text-xs text-slate-400">
+                  Model: <span className="text-blue-600 font-mono">meta/llama-3.2-11b-vision-instruct</span> via NVIDIA API
                 </p>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 text-xs text-zinc-300 space-y-2">
-              <p className="font-semibold text-white">✨ AI Capabilities Built In:</p>
-              <ul className="list-disc pl-5 space-y-1 text-zinc-400">
+            <div className="p-4 rounded-xl bg-blue-50 border border-blue-100 text-xs text-slate-600 space-y-2">
+              <p className="font-semibold text-slate-800">✨ AI Capabilities Built In:</p>
+              <ul className="list-disc pl-5 space-y-1 text-slate-500">
                 <li>
-                  <strong className="text-zinc-200">Professional Rewrite:</strong> Polishes rough notes into technical, objective, and liability-conscious report phrasing.
+                  <strong className="text-slate-700">Professional Rewrite:</strong> Polishes rough notes into technical, objective, and liability-conscious report phrasing.
                 </li>
                 <li>
-                  <strong className="text-zinc-200">Defect Expansion:</strong> Turns simple shorthand like "cracked pipe in basement" into complete standard defect observations with safety risks and actionable contractor recommendations.
+                  <strong className="text-slate-700">Defect Expansion:</strong> Turns simple shorthand like "cracked pipe in basement" into complete standard defect observations with safety risks and actionable contractor recommendations.
                 </li>
                 <li>
-                  <strong className="text-zinc-200">Homeowner Summary:</strong> Summarizes complex findings into clear, jargon-free overviews for homebuyers.
+                  <strong className="text-slate-700">Homeowner Summary:</strong> Summarizes complex findings into clear, jargon-free overviews for homebuyers.
                 </li>
               </ul>
             </div>
 
             <div className="space-y-3">
-              <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Test Inspector Observation Prompt
               </label>
               <textarea
                 id="ai-playground-input"
                 rows={4}
                 defaultValue="cracked shingles near chimney, flashing looks rusted and water stains on plywood decking underneath"
-                className="w-full p-3 rounded-xl bg-[#1a1a26] border border-white/10 text-xs text-white focus:outline-none focus:border-amber-500 leading-relaxed font-sans"
+                className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-blue-400 leading-relaxed font-sans"
               />
               <div className="flex items-center gap-2">
                 <button
@@ -1232,7 +1233,7 @@ export default function Home() {
                       triggerAiAssistant(0, 0, 0, el.value, 'rewrite');
                     }
                   }}
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs flex items-center gap-2 shadow-lg shadow-amber-500/20 transition-all"
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-blue-200 transition-all"
                 >
                   <Sparkles className="w-4 h-4" />
                   Test AI Rewrite
@@ -1244,9 +1245,9 @@ export default function Home() {
                       triggerAiAssistant(0, 0, 0, el.value, 'suggest');
                     }
                   }}
-                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-300 font-semibold text-xs flex items-center gap-2 border border-white/10 transition-all"
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs flex items-center gap-2 border border-slate-200 transition-all"
                 >
-                  <Zap className="w-4 h-4 text-amber-400" />
+                  <Zap className="w-4 h-4 text-blue-500" />
                   Expand Defect Language
                 </button>
               </div>
@@ -1259,16 +1260,16 @@ export default function Home() {
           AI SUGGESTION MODAL
       ============================================================ */}
       {aiModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="max-w-xl w-full rounded-2xl bg-[#14141e] border border-white/15 p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-800/40 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="max-w-xl w-full rounded-2xl bg-white border border-blue-100 p-6 shadow-2xl shadow-blue-100/60 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-amber-400" />
-                <h3 className="text-base font-bold text-white">NVIDIA AI Assistant</h3>
+                <Sparkles className="w-5 h-5 text-blue-500" />
+                <h3 className="text-base font-bold text-slate-800">NVIDIA AI Assistant</h3>
               </div>
               <button
                 onClick={() => setAiModalOpen(false)}
-                className="text-zinc-400 hover:text-white text-xs"
+                className="text-slate-400 hover:text-slate-600 text-xs font-medium"
               >
                 ✕ Close
               </button>
@@ -1276,15 +1277,15 @@ export default function Home() {
 
             {aiLoading && (
               <div className="py-8 text-center space-y-3">
-                <RefreshCw className="w-6 h-6 text-amber-400 animate-spin mx-auto" />
-                <p className="text-xs text-zinc-400">
+                <RefreshCw className="w-6 h-6 text-blue-500 animate-spin mx-auto" />
+                <p className="text-xs text-slate-400">
                   Calling NVIDIA Llama-3.2 Vision-Instruct endpoint...
                 </p>
               </div>
             )}
 
             {aiError && (
-              <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-300">
+              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-600">
                 <strong>Error:</strong> {aiError}
               </div>
             )}
@@ -1292,34 +1293,34 @@ export default function Home() {
             {!aiLoading && aiSuggestion && (
               <div className="space-y-3">
                 <div className="space-y-1">
-                  <div className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">
+                  <div className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
                     Original Inspector Note:
                   </div>
-                  <div className="p-2.5 rounded-lg bg-black/40 text-xs text-zinc-400 italic">
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-500 italic">
                     "{aiTargetComment?.text}"
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-[10px] text-amber-400 uppercase tracking-wider font-semibold flex items-center gap-1">
+                  <div className="text-[10px] text-blue-600 uppercase tracking-wider font-semibold flex items-center gap-1">
                     <Sparkles className="w-3 h-3" />
                     AI Professional Phrasing:
                   </div>
-                  <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-amber-100 font-medium leading-relaxed">
+                  <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 font-medium leading-relaxed">
                     {aiSuggestion}
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/5">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                   <button
                     onClick={() => setAiModalOpen(false)}
-                    className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-zinc-400 transition-all"
+                    className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-500 transition-all"
                   >
                     Discard
                   </button>
                   <button
                     onClick={applyAiSuggestion}
-                    className="px-4 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center gap-1.5"
+                    className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg shadow-blue-200 transition-all flex items-center gap-1.5"
                   >
                     <Check className="w-3.5 h-3.5" />
                     Accept Suggestion
@@ -1335,27 +1336,27 @@ export default function Home() {
           SUPABASE SQL SETUP MODAL
       ============================================================ */}
       {sqlModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="max-w-2xl w-full rounded-2xl bg-[#14141e] border border-white/15 p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-800/40 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="max-w-2xl w-full rounded-2xl bg-white border border-blue-100 p-6 shadow-2xl shadow-blue-100/60 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Database className="w-5 h-5 text-amber-400" />
-                <h3 className="text-base font-bold text-white">Supabase Cloud Database Setup</h3>
+                <Database className="w-5 h-5 text-blue-500" />
+                <h3 className="text-base font-bold text-slate-800">Supabase Cloud Database Setup</h3>
               </div>
               <button
                 onClick={() => setSqlModalOpen(false)}
-                className="text-zinc-400 hover:text-white text-xs"
+                className="text-slate-400 hover:text-slate-600 text-xs font-medium"
               >
                 ✕ Close
               </button>
             </div>
 
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <p className="text-xs text-slate-500 leading-relaxed">
               Your app is currently running in full interactive mode. To persist templates permanently to your Supabase PostgreSQL cloud instance, run this migration in your Supabase SQL Editor.
             </p>
 
             <div className="relative">
-              <div className="max-h-60 overflow-y-auto rounded-xl bg-[#0a0a0f] border border-white/10 p-3 text-[11px] font-mono text-zinc-300">
+              <div className="max-h-60 overflow-y-auto rounded-xl bg-slate-50 border border-slate-200 p-3 text-[11px] font-mono text-slate-600">
                 {`-- Enable UUID generation
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -1424,7 +1425,7 @@ CREATE POLICY "Allow all access to comments" ON comments FOR ALL USING (true) WI
                 href="https://supabase.com/dashboard/project/xlqafsetnxkvtpxupuqk/sql"
                 target="_blank"
                 rel="noreferrer"
-                className="text-xs text-amber-400 hover:text-amber-300 underline flex items-center gap-1 font-medium"
+                className="text-xs text-blue-600 hover:text-blue-700 underline flex items-center gap-1 font-medium"
               >
                 Open Supabase SQL Editor
                 <ExternalLink className="w-3 h-3" />
@@ -1441,7 +1442,7 @@ CREATE POLICY "Allow all access to templates" ON templates FOR ALL USING (true) 
                   setCopiedSql(true);
                   setTimeout(() => setCopiedSql(false), 2000);
                 }}
-                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/20"
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shadow-blue-200"
               >
                 {copiedSql ? (
                   <>
