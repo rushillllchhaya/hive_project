@@ -170,9 +170,9 @@ async function callGemini(apiKey: string, prompt: string): Promise<string> {
 // NVIDIA NIM API call (OpenAI-compatible) with auto-fallback
 // ============================================================
 const DEFAULT_NVIDIA_MODELS = [
+  'openai/gpt-oss-20b',
+  'z-ai/glm-5.3',
   'meta/llama-3.2-11b-vision-instruct',
-  'nvidia/llama-3.1-nemotron-70b-instruct',
-  'meta/llama-3.2-90b-vision-instruct',
 ];
 
 // Models known to have reached EOL/sunset on NVIDIA NIM
@@ -187,7 +187,7 @@ const RETIRED_MODELS = new Set([
 async function callNvidia(apiKey: string, prompt: string): Promise<string> {
   let configuredModel = process.env.NVIDIA_MODEL?.trim();
 
-  // If configured model is known to be sunset/retired, swap to active Llama 3.2
+  // If configured model is known to be sunset/retired, swap to active default
   if (!configuredModel || RETIRED_MODELS.has(configuredModel)) {
     configuredModel = DEFAULT_NVIDIA_MODELS[0];
   }
@@ -209,7 +209,7 @@ async function callNvidia(apiKey: string, prompt: string): Promise<string> {
           model,
           messages: [{ role: 'user', content: prompt }],
           temperature: 0.2,
-          max_tokens: 1024,
+          max_tokens: 1500,
         }),
       });
 
@@ -221,7 +221,8 @@ async function callNvidia(apiKey: string, prompt: string): Promise<string> {
           response.status === 404 ||
           errorData.includes('no longer available') ||
           errorData.includes('end of life') ||
-          errorData.includes('reached its end')
+          errorData.includes('reached its end') ||
+          errorData.includes('Not found for account')
         ) {
           console.warn(`[NVIDIA AI] Model ${model} is unavailable (${response.status}). Trying fallback...`);
           lastError = new Error(`NVIDIA model ${model} unavailable: ${errorData}`);
@@ -231,8 +232,15 @@ async function callNvidia(apiKey: string, prompt: string): Promise<string> {
       }
 
       const data = await response.json();
-      const content = data.choices?.[0]?.message?.content || '';
-      if (content) return content;
+      const msg = data.choices?.[0]?.message;
+      let content = msg?.content || '';
+      if (!content && msg?.reasoning_content) {
+        content = msg.reasoning_content;
+      }
+      if (content) {
+        content = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+        if (content) return content;
+      }
     } catch (err: any) {
       lastError = err;
       // If it's an authorization failure, throw immediately without trying fallbacks
