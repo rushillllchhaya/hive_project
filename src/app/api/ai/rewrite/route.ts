@@ -55,16 +55,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Check for obvious hallucination (response much longer than input)
-    if (suggestion.length > commentText.length * 5 && commentText.length > 50) {
-      return NextResponse.json({
-        success: false,
-        original: commentText,
-        suggestion,
-        error: 'AI response seems unusually long compared to input. Review carefully before accepting.',
-      });
-    }
-
     return NextResponse.json({
       success: true,
       original: commentText,
