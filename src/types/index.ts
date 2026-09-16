@@ -170,11 +170,16 @@ export interface ParsedSection {
   items: ParsedItem[];
 }
 
+export type TemplateInspectionStatus = 'new_formed' | 'pending' | 'completed';
+
 export interface ParsedTemplate {
   name: string;
   sourceFile: string;
   sourcePlatform: string;
   sections: ParsedSection[];
+  status?: TemplateInspectionStatus;
+  lastUsedAt?: string;
+  description?: string;
 }
 
 export interface ValidationEntry {
@@ -224,4 +229,90 @@ export interface ApiResponse<T> {
   success: boolean;
   data?: T;
   error?: string;
+}
+
+// ---- Inspection Management Types ----
+
+export type InspectionStatus = 'scheduled' | 'in_progress' | 'completed';
+
+export interface AssignedAgent {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  avatar: string;
+  agency?: string;
+}
+
+export interface InspectionProperty {
+  id: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  lat: number;
+  lng: number;
+  assignedAgent: AssignedAgent;
+  status: InspectionStatus;
+  scheduledTime: string;
+  scheduledDate: string;
+  inspectionType: string;
+  clientName: string;
+  realtorAgent?: string;
+  price: number;
+  thumbnail: string;
+  notes?: string;
+  completedAt?: string;
+}
+
+export interface AgentContact {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  agency: string;
+  team: string;
+  inspectionsCount: number;
+  buyerAgentCount: number;
+  sellerAgentCount: number;
+  activeInspections: number;
+  completedInspections: number;
+  rating: number;
+  avatar: string;
+}
+
+export interface MonthlyMetric {
+  month: string;
+  currentYear: number;
+  previousYear: number;
+}
+
+export interface ReferralMetric {
+  name: string;
+  percentage: number;
+  count: number;
+  color: string;
+}
+
+export interface AgentMetric {
+  name: string;
+  inspections: number;
+  agency: string;
+}
+
+export interface MetricsSummary {
+  inspectionsTrend: MonthlyMetric[];
+  referralSources: ReferralMetric[];
+  topAgents: AgentMetric[];
+  revenueMonthly: {
+    month: string;
+    currentYear: number;
+    previousYear: number;
+  }[];
+  onlineSchedulerRevenue: number;
+  partnershipRevenue: number;
+  totalInspections: number;
+  avgInspectionFee: number;
+  avgTurnaroundHours: number;
+  satisfactionRate: number;
 }

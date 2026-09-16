@@ -93,7 +93,7 @@ export function parseSpectoraFile(
     logs.push({
       rowNumber: 0,
       status: 'error',
-      message: 'Missing required column: "Section Name". This may not be a valid Spectora export.',
+      message: 'Missing required column: "Section Name". Please verify the spreadsheet template format.',
     });
   }
 
@@ -204,13 +204,21 @@ function parseComment(
     });
   }
 
-  // Comment text (HTML preserved)
+  // Comment text (HTML preserved or Plain text supported)
   const text = (row['Comment Text'] as string) || '';
   if (!text.trim()) {
     logs.push({
       rowNumber,
       status: 'warning',
       message: 'Empty Comment Text.',
+      fieldName: 'Comment Text',
+    });
+  } else if (/<[a-z][\s\S]*>/i.test(text)) {
+    // Flag rich HTML content preserved
+    logs.push({
+      rowNumber,
+      status: 'success',
+      message: `Preserved rich HTML formatting for "${name}"`,
       fieldName: 'Comment Text',
     });
   }
@@ -344,4 +352,62 @@ export function computeImportStats(template: ParsedTemplate, logs: ValidationEnt
     errors: logs.filter((l) => l.status === 'error').length,
     skipped: logs.filter((l) => l.status === 'skipped').length,
   };
+}
+
+// ============================================================
+// Export template to Spectora-compliant Excel spreadsheet
+// Supports both 'html' (with rich tags) and 'plaintext'
+// ============================================================
+export function exportSpectoraSpreadsheet(
+  template: ParsedTemplate,
+  format: 'html' | 'plaintext'
+) {
+  const rows: Record<string, unknown>[] = [];
+
+  template.sections.forEach((sec, sIdx) => {
+    sec.items.forEach((item, iIdx) => {
+      item.comments.forEach((comm, cIdx) => {
+        let commentText = comm.text || '';
+        if (format === 'plaintext') {
+          // Strip HTML tags for clean plain-text spreadsheet editing
+          commentText = commentText
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/<\/p>/gi, '\n\n')
+            .replace(/<[^>]+>/g, '')
+            .trim();
+        }
+
+        rows.push({
+          'Section Name': sec.name,
+          'Item Name': item.name,
+          'Comment Name': comm.name,
+          'Comment Text': commentText,
+          'Comment Type': comm.commentType,
+          'Category': comm.category,
+          'Answer Type': comm.answerType,
+          'Multiple Choice Options': comm.multipleChoiceOptions || '',
+          'Recommendation': comm.recommendation || '',
+          'Order': comm.sortOrder || (cIdx + 1),
+          'Default Value': comm.defaultValue || '',
+          'Default Value 2': comm.defaultValue2 || '',
+          'Default Unit Type': comm.defaultUnitType || '',
+          'Default Location': comm.defaultLocation || 'General',
+          'Default Estimate Min': comm.defaultEstimateMin ?? '',
+          'Default Estimate Max': comm.defaultEstimateMax ?? '',
+          'Locked': comm.locked ? 'TRUE' : 'FALSE',
+          'Simple Format': comm.simpleFormat ? 'TRUE' : 'FALSE',
+          'Disable Photos': comm.disablePhotos ? 'TRUE' : 'FALSE',
+          'Uses': comm.uses || 1,
+        });
+      });
+    });
+  });
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Template');
+
+  const suffix = format === 'html' ? 'html-export' : 'plain-text-export';
+  const cleanName = template.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  XLSX.writeFile(wb, `${cleanName}-${suffix}.xlsx`);
 }
