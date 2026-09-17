@@ -281,6 +281,22 @@ export interface AgentContact {
   avatar: string;
 }
 
+export type BusinessContactRole = 'Realtor' | 'Inspector' | 'Broker' | 'Client' | 'Contractor';
+
+export interface BusinessContact {
+  id: string;
+  name: string;
+  role: BusinessContactRole;
+  agency: string;
+  email: string;
+  phone: string;
+  avatar: string;
+  dealsCount?: number;
+  rating?: number;
+  status?: 'active' | 'partner' | 'lead';
+  location?: string;
+}
+
 export interface MonthlyMetric {
   month: string;
   currentYear: number;

@@ -94,7 +94,7 @@ export default function AgentsView({ agents, onAddAgent }: AgentsViewProps) {
             onClick={() => setNewModalOpen(true)}
             className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs shadow-blue-500/20"
           >
-            <Plus className="w-3.5 h-3.5" /> + Add Agent
+            <Plus className="w-3.5 h-3.5" /> Add Agent
           </button>
         </div>
       </div>
