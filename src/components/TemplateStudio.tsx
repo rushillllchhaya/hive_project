@@ -1113,7 +1113,7 @@ export default function TemplateStudio({
                 ) : (
                   <div className="flex items-center gap-2 min-w-0">
                     <h2
-                      className="text-sm sm:text-base font-extrabold uppercase tracking-tight text-slate-900 truncate max-w-[180px] sm:max-w-[240px] md:max-w-[280px] lg:max-w-[360px] xl:max-w-[460px]"
+                      className="text-sm sm:text-base font-extrabold uppercase tracking-tight text-slate-900 truncate max-w-[200px] sm:max-w-[280px] md:max-w-[340px] lg:max-w-[440px] xl:max-w-[540px]"
                       title={activeTemplate.name}
                     >
                       {activeTemplate.name}
@@ -1125,23 +1125,6 @@ export default function TemplateStudio({
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                     </button>
-
-                    {/* Status Dropdown Selector inside Editor */}
-                    <select
-                      value={activeTemplate.status || (activeTemplateIndex === 0 ? 'completed' : 'new_formed')}
-                      onChange={e => handleUpdateTemplateStatus(activeTemplateIndex, e.target.value as TemplateInspectionStatus)}
-                      className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border cursor-pointer focus:outline-none shrink-0 ${
-                        (activeTemplate.status || (activeTemplateIndex === 0 ? 'completed' : 'new_formed')) === 'completed'
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                          : (activeTemplate.status || (activeTemplateIndex === 0 ? 'completed' : 'new_formed')) === 'pending'
-                          ? 'bg-amber-50 text-amber-700 border-amber-200'
-                          : 'bg-blue-50 text-blue-700 border-blue-200'
-                      }`}
-                    >
-                      <option value="completed">✓ Done</option>
-                      <option value="pending">⏳ Pending</option>
-                      <option value="new_formed">✨ New</option>
-                    </select>
                   </div>
                 )}
                 <p className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">
@@ -1150,15 +1133,33 @@ export default function TemplateStudio({
               </div>
             </div>
 
-            {/* Right Action Buttons: Never wraps onto second line */}
+            {/* Right Action Buttons with matching Status Dropdown */}
             <div className="flex items-center gap-2 shrink-0 flex-nowrap overflow-x-auto">
+              {/* Status Selector Dropdown - Moved next to New Template with matching size */}
+              <select
+                value={activeTemplate.status || (activeTemplateIndex === 0 ? 'completed' : 'new_formed')}
+                onChange={e => handleUpdateTemplateStatus(activeTemplateIndex, e.target.value as TemplateInspectionStatus)}
+                className={`px-3 py-1.5 rounded-xl border text-xs font-bold cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all shadow-2xs whitespace-nowrap shrink-0 ${
+                  (activeTemplate.status || (activeTemplateIndex === 0 ? 'completed' : 'new_formed')) === 'completed'
+                    ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-300'
+                    : (activeTemplate.status || (activeTemplateIndex === 0 ? 'completed' : 'new_formed')) === 'pending'
+                    ? 'bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-300'
+                    : 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300'
+                }`}
+                title="Change template status"
+              >
+                <option value="completed">✓ Status: Done</option>
+                <option value="pending">⏳ Status: Pending</option>
+                <option value="new_formed">✨ Status: New</option>
+              </select>
+
               <button
                 onClick={() => {
                   setNewTemplateName('');
                   setNewTemplatePreset('new-home');
                   setNewTemplateModalOpen(true);
                 }}
-                className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs shadow-emerald-500/20 whitespace-nowrap"
+                className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs shadow-emerald-500/20 whitespace-nowrap shrink-0"
                 title="Create an entirely new inspection template"
               >
                 <PlusCircle className="w-3.5 h-3.5" /> New Template
