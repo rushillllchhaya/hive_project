@@ -491,6 +491,12 @@ const STARTER_PRESETS: Record<string, { label: string; desc: string; sections: P
   },
 };
 
+const SELECTED_SECTION_KEY = 'hive_inspect_selected_section_idx_v2';
+const SELECTED_ITEM_KEY = 'hive_inspect_selected_item_idx_v2';
+const COMMENT_DRAFT_KEY = 'hive_inspect_comment_draft_v2';
+const RENAME_DRAFT_KEY = 'hive_inspect_rename_draft_v2';
+const NEW_TEMPLATE_DRAFT_KEY = 'hive_inspect_new_template_draft_v2';
+
 export default function TemplateStudio({
   templates,
   activeTemplateIndex,
@@ -520,8 +526,8 @@ export default function TemplateStudio({
     onViewModeChange?.(mode);
   };
 
-  const [selectedSectionIdx, setSelectedSectionIdx] = useState(0);
-  const [selectedItemIdx, setSelectedItemIdx] = useState(0);
+  const [selectedSectionIdx, setSelectedSectionIdx] = useState<number>(0);
+  const [selectedItemIdx, setSelectedItemIdx] = useState<number>(0);
   const [sectionSearch, setSectionSearch] = useState('');
   const [itemSearch, setItemSearch] = useState('');
   const [commentSearch, setCommentSearch] = useState('');
@@ -545,23 +551,139 @@ export default function TemplateStudio({
   const [newTemplateName, setNewTemplateName] = useState('');
   const [newTemplatePreset, setNewTemplatePreset] = useState<'new-home' | 'four-point' | 'blank'>('new-home');
 
-  // New Comment Modal
+  // New Comment Modal & Unsaved Draft State
   const [newCommentModalOpen, setNewCommentModalOpen] = useState(false);
   const [newCommentName, setNewCommentName] = useState('');
   const [newCommentText, setNewCommentText] = useState('');
   const [newCommentType, setNewCommentType] = useState<CommentType>('info');
   const [newCommentRec, setNewCommentRec] = useState('');
   const [newCommentLocation, setNewCommentLocation] = useState('General');
+  const [hasRestoredCommentDraft, setHasRestoredCommentDraft] = useState(false);
 
-  const currentSection: ParsedSection | undefined = activeTemplate?.sections[selectedSectionIdx];
-  const currentItem: ParsedItem | undefined = currentSection?.items[selectedItemIdx];
+  // Load persisted section, item, and draft inputs on mount
+  useEffect(() => {
+    try {
+      const savedSection = localStorage.getItem(SELECTED_SECTION_KEY);
+      if (savedSection !== null && !isNaN(Number(savedSection))) {
+        setSelectedSectionIdx(Number(savedSection));
+      }
+
+      const savedItem = localStorage.getItem(SELECTED_ITEM_KEY);
+      if (savedItem !== null && !isNaN(Number(savedItem))) {
+        setSelectedItemIdx(Number(savedItem));
+      }
+
+      const savedCommentDraftStr = localStorage.getItem(COMMENT_DRAFT_KEY);
+      if (savedCommentDraftStr) {
+        const draft = JSON.parse(savedCommentDraftStr);
+        if (draft && (draft.name || draft.text || draft.rec || draft.isOpen)) {
+          if (draft.name) setNewCommentName(draft.name);
+          if (draft.text) setNewCommentText(draft.text);
+          if (draft.type) setNewCommentType(draft.type);
+          if (draft.rec) setNewCommentRec(draft.rec);
+          if (draft.location) setNewCommentLocation(draft.location);
+          if (draft.isOpen || draft.name || draft.text || draft.rec) {
+            setNewCommentModalOpen(true);
+            setHasRestoredCommentDraft(true);
+          }
+        }
+      }
+
+      const savedRename = localStorage.getItem(RENAME_DRAFT_KEY);
+      if (savedRename) {
+        const parsed = JSON.parse(savedRename);
+        if (parsed && parsed.value && parsed.templateIdx === activeTemplateIndex) {
+          setRenameValue(parsed.value);
+          setIsRenamingTemplate(true);
+        }
+      }
+
+      const savedNewTemplate = localStorage.getItem(NEW_TEMPLATE_DRAFT_KEY);
+      if (savedNewTemplate) {
+        const parsed = JSON.parse(savedNewTemplate);
+        if (parsed && (parsed.name || parsed.isOpen)) {
+          if (parsed.name) setNewTemplateName(parsed.name);
+          if (parsed.preset) setNewTemplatePreset(parsed.preset);
+          if (parsed.isOpen) setNewTemplateModalOpen(true);
+        }
+      }
+    } catch {}
+  }, []);
+
+  const handleSelectSection = (idx: number) => {
+    setSelectedSectionIdx(idx);
+    setSelectedItemIdx(0);
+    try {
+      localStorage.setItem(SELECTED_SECTION_KEY, String(idx));
+      localStorage.setItem(SELECTED_ITEM_KEY, '0');
+    } catch {}
+  };
+
+  const handleSelectItem = (idx: number) => {
+    setSelectedItemIdx(idx);
+    try {
+      localStorage.setItem(SELECTED_ITEM_KEY, String(idx));
+    } catch {}
+  };
+
+  const persistCommentDraft = (updates: {
+    name?: string;
+    text?: string;
+    type?: CommentType;
+    rec?: string;
+    location?: string;
+    isOpen?: boolean;
+  }) => {
+    try {
+      const draft = {
+        name: updates.name !== undefined ? updates.name : newCommentName,
+        text: updates.text !== undefined ? updates.text : newCommentText,
+        type: updates.type !== undefined ? updates.type : newCommentType,
+        rec: updates.rec !== undefined ? updates.rec : newCommentRec,
+        location: updates.location !== undefined ? updates.location : newCommentLocation,
+        isOpen: updates.isOpen !== undefined ? updates.isOpen : newCommentModalOpen,
+        sectionIdx: selectedSectionIdx,
+        itemIdx: selectedItemIdx,
+        updatedAt: Date.now(),
+      };
+      if (draft.name || draft.text || draft.rec || draft.isOpen) {
+        localStorage.setItem(COMMENT_DRAFT_KEY, JSON.stringify(draft));
+      } else {
+        localStorage.removeItem(COMMENT_DRAFT_KEY);
+      }
+    } catch {}
+  };
+
+  const handleDiscardCommentDraft = () => {
+    setNewCommentName('');
+    setNewCommentText('');
+    setNewCommentRec('');
+    setNewCommentLocation('General');
+    setNewCommentModalOpen(false);
+    setHasRestoredCommentDraft(false);
+    try { localStorage.removeItem(COMMENT_DRAFT_KEY); } catch {}
+  };
+
+  const validSectionIdx = activeTemplate?.sections && activeTemplate.sections.length > 0
+    ? Math.min(Math.max(0, selectedSectionIdx), activeTemplate.sections.length - 1)
+    : 0;
+  const currentSection: ParsedSection | undefined = activeTemplate?.sections[validSectionIdx];
+
+  const validItemIdx = currentSection?.items && currentSection.items.length > 0
+    ? Math.min(Math.max(0, selectedItemIdx), currentSection.items.length - 1)
+    : 0;
+  const currentItem: ParsedItem | undefined = currentSection?.items[validItemIdx];
 
   /* ── Save helpers ── */
   const cloneTemplates = (): ParsedTemplate[] => JSON.parse(JSON.stringify(templates));
 
   const handleStartRename = () => {
-    setRenameValue(activeTemplate?.name || '');
+    const val = activeTemplate?.name || '';
+    setRenameValue(val);
     setIsRenamingTemplate(true);
+    try {
+      localStorage.setItem(RENAME_DRAFT_KEY, JSON.stringify({ templateIdx: activeTemplateIndex, value: val }));
+    } catch {}
   };
 
   const handleSaveRename = (e?: React.FormEvent) => {
@@ -573,6 +695,7 @@ export default function TemplateStudio({
       onUpdateTemplates(cl);
     }
     setIsRenamingTemplate(false);
+    try { localStorage.removeItem(RENAME_DRAFT_KEY); } catch {}
   };
 
   /* ── Template creation handler ── */
@@ -599,8 +722,8 @@ export default function TemplateStudio({
     setNewTemplateModalOpen(false);
     setNewTemplateName('');
     setNewTemplatePreset('new-home');
-    setSelectedSectionIdx(0);
-    setSelectedItemIdx(0);
+    try { localStorage.removeItem(NEW_TEMPLATE_DRAFT_KEY); } catch {}
+    handleSelectSection(0);
     setViewMode('editor');
   };
 
@@ -614,8 +737,7 @@ export default function TemplateStudio({
 
   const handleOpenEditor = (idx: number) => {
     onSelectTemplate(idx);
-    setSelectedSectionIdx(0);
-    setSelectedItemIdx(0);
+    handleSelectSection(0);
     setViewMode('editor');
   };
 
@@ -630,8 +752,7 @@ export default function TemplateStudio({
       items: [{ name: 'General', sortOrder: 1, comments: [] }],
     });
     onUpdateTemplates(cl);
-    setSelectedSectionIdx(cl[activeTemplateIndex].sections.length - 1);
-    setSelectedItemIdx(0);
+    handleSelectSection(cl[activeTemplateIndex].sections.length - 1);
   };
 
   const handleMoveSection = (fromIdx: number, toIdx: number) => {
@@ -640,7 +761,7 @@ export default function TemplateStudio({
     const item = cl[activeTemplateIndex].sections.splice(fromIdx, 1)[0];
     cl[activeTemplateIndex].sections.splice(toIdx, 0, item);
     onUpdateTemplates(cl);
-    setSelectedSectionIdx(toIdx);
+    handleSelectSection(toIdx);
   };
 
   const handleDeleteSection = (idx: number) => {
@@ -652,8 +773,7 @@ export default function TemplateStudio({
       const cl = cloneTemplates();
       cl[activeTemplateIndex].sections.splice(idx, 1);
       onUpdateTemplates(cl);
-      setSelectedSectionIdx(Math.max(0, idx - 1));
-      setSelectedItemIdx(0);
+      handleSelectSection(Math.max(0, idx - 1));
     }
   };
 
@@ -662,22 +782,22 @@ export default function TemplateStudio({
     const name = prompt('Enter new item name (e.g. "Water Heater & Plumbing"):');
     if (!name) return;
     const cl = cloneTemplates();
-    cl[activeTemplateIndex].sections[selectedSectionIdx].items.push({
+    cl[activeTemplateIndex].sections[validSectionIdx].items.push({
       name,
-      sortOrder: cl[activeTemplateIndex].sections[selectedSectionIdx].items.length + 1,
+      sortOrder: cl[activeTemplateIndex].sections[validSectionIdx].items.length + 1,
       comments: [],
     });
     onUpdateTemplates(cl);
-    setSelectedItemIdx(cl[activeTemplateIndex].sections[selectedSectionIdx].items.length - 1);
+    handleSelectItem(cl[activeTemplateIndex].sections[validSectionIdx].items.length - 1);
   };
 
   const handleMoveItem = (fromIdx: number, toIdx: number) => {
     if (!currentSection || toIdx < 0 || toIdx >= currentSection.items.length) return;
     const cl = cloneTemplates();
-    const item = cl[activeTemplateIndex].sections[selectedSectionIdx].items.splice(fromIdx, 1)[0];
-    cl[activeTemplateIndex].sections[selectedSectionIdx].items.splice(toIdx, 0, item);
+    const item = cl[activeTemplateIndex].sections[validSectionIdx].items.splice(fromIdx, 1)[0];
+    cl[activeTemplateIndex].sections[validSectionIdx].items.splice(toIdx, 0, item);
     onUpdateTemplates(cl);
-    setSelectedItemIdx(toIdx);
+    handleSelectItem(toIdx);
   };
 
   const handleDeleteItem = (idx: number) => {
@@ -687,9 +807,9 @@ export default function TemplateStudio({
     }
     if (confirm(`Delete item "${currentSection?.items[idx].name}"?`)) {
       const cl = cloneTemplates();
-      cl[activeTemplateIndex].sections[selectedSectionIdx].items.splice(idx, 1);
+      cl[activeTemplateIndex].sections[validSectionIdx].items.splice(idx, 1);
       onUpdateTemplates(cl);
-      setSelectedItemIdx(Math.max(0, idx - 1));
+      handleSelectItem(Math.max(0, idx - 1));
     }
   };
 
@@ -699,51 +819,58 @@ export default function TemplateStudio({
     if (!newCommentName.trim()) return;
 
     const cl = cloneTemplates();
-    cl[activeTemplateIndex].sections[selectedSectionIdx].items[selectedItemIdx].comments.push({
-      name: newCommentName,
-      text: newCommentText || 'Standard inspection observation note.',
+    const sec = cl[activeTemplateIndex]?.sections[validSectionIdx];
+    const itm = sec?.items[validItemIdx];
+    if (!itm) return;
+
+    itm.comments.push({
+      name: newCommentName.trim(),
+      text: newCommentText.trim() || 'Standard inspection observation note.',
       commentType: newCommentType,
       category: newCommentType === 'defect' ? 1 : newCommentType === 'limit' ? 0 : -1,
       answerType: 'text',
       multipleChoiceOptions: null,
-      recommendation: newCommentRec || null,
+      recommendation: newCommentRec.trim() || null,
       defaultValue: null,
       defaultValue2: null,
       defaultUnitType: null,
-      defaultLocation: newCommentLocation,
+      defaultLocation: newCommentLocation.trim() || 'General',
       defaultEstimateMin: null,
       defaultEstimateMax: null,
       locked: false,
       simpleFormat: false,
       disablePhotos: false,
       uses: 1,
-      sortOrder: (currentItem?.comments.length || 0) + 1,
+      sortOrder: (itm.comments.length || 0) + 1,
     });
 
     onUpdateTemplates(cl);
     setNewCommentName('');
     setNewCommentText('');
     setNewCommentRec('');
+    setNewCommentLocation('General');
     setNewCommentModalOpen(false);
+    setHasRestoredCommentDraft(false);
+    try { localStorage.removeItem(COMMENT_DRAFT_KEY); } catch {}
   };
 
   const handleMoveComment = (fromIdx: number, toIdx: number) => {
     if (!currentItem || toIdx < 0 || toIdx >= currentItem.comments.length) return;
     const cl = cloneTemplates();
-    const comment = cl[activeTemplateIndex].sections[selectedSectionIdx].items[selectedItemIdx].comments.splice(fromIdx, 1)[0];
-    cl[activeTemplateIndex].sections[selectedSectionIdx].items[selectedItemIdx].comments.splice(toIdx, 0, comment);
+    const comment = cl[activeTemplateIndex].sections[validSectionIdx].items[validItemIdx].comments.splice(fromIdx, 1)[0];
+    cl[activeTemplateIndex].sections[validSectionIdx].items[validItemIdx].comments.splice(toIdx, 0, comment);
     onUpdateTemplates(cl);
   };
 
   const handleDeleteComment = (idx: number) => {
     const cl = cloneTemplates();
-    cl[activeTemplateIndex].sections[selectedSectionIdx].items[selectedItemIdx].comments.splice(idx, 1);
+    cl[activeTemplateIndex].sections[validSectionIdx].items[validItemIdx].comments.splice(idx, 1);
     onUpdateTemplates(cl);
   };
 
   const handleUpdateCommentField = (commentIdx: number, field: keyof ParsedComment, val: any) => {
     const cl = cloneTemplates();
-    (cl[activeTemplateIndex].sections[selectedSectionIdx].items[selectedItemIdx].comments[commentIdx] as any)[field] = val;
+    (cl[activeTemplateIndex].sections[validSectionIdx].items[validItemIdx].comments[commentIdx] as any)[field] = val;
     onUpdateTemplates(cl);
   };
 
@@ -1127,8 +1254,13 @@ export default function TemplateStudio({
                     </button>
                   </div>
                 )}
-                <p className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">
-                  3-Column studio · {activeTemplate.sections.length} Sections · Auto-saving enabled
+                <p className="text-[11px] text-slate-500 font-medium mt-0.5 truncate flex items-center gap-2">
+                  <span>3-Column studio · {activeTemplate.sections.length} Sections</span>
+                  <span className="text-slate-300">•</span>
+                  <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                    Auto-saved &amp; Persistent
+                  </span>
                 </p>
               </div>
             </div>
@@ -1264,10 +1396,7 @@ export default function TemplateStudio({
                         setDraggedSectionIdx(null);
                       }
                     }}
-                    onClick={() => {
-                      setSelectedSectionIdx(actualIdx);
-                      setSelectedItemIdx(0);
-                    }}
+                    onClick={() => handleSelectSection(actualIdx)}
                     className={`group px-2.5 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-all cursor-pointer border ${
                       isSelected
                         ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
@@ -1381,7 +1510,7 @@ export default function TemplateStudio({
                         setDraggedItemIdx(null);
                       }
                     }}
-                    onClick={() => setSelectedItemIdx(actualIdx)}
+                    onClick={() => handleSelectItem(actualIdx)}
                     className={`group px-2.5 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-all cursor-pointer border ${
                       isSelected
                         ? 'bg-blue-50 text-blue-700 border-blue-300 font-bold shadow-2xs'
@@ -1465,7 +1594,10 @@ export default function TemplateStudio({
 
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setNewCommentModalOpen(true)}
+                  onClick={() => {
+                    setNewCommentModalOpen(true);
+                    persistCommentDraft({ isOpen: true });
+                  }}
                   className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs shadow-blue-500/20"
                 >
                   <Plus className="w-3.5 h-3.5" /> NEW COMMENT
@@ -1544,14 +1676,35 @@ export default function TemplateStudio({
     </div>
   )}
 
-      {/* ── New Comment Modal Dialog ── */}
+      {/* ── New Comment Modal Dialog with Draft Auto-Save & Recovery ── */}
       {newCommentModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
           <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-4 animate-fade-up">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-base">Add Inspection Comment / Finding</h3>
-              <button onClick={() => setNewCommentModalOpen(false)} className="text-slate-400 hover:text-slate-600">✕</button>
+              <div>
+                <h3 className="font-bold text-slate-900 text-base">Add Inspection Comment / Finding</h3>
+                <p className="text-[11px] text-slate-400 font-medium">
+                  {currentSection?.name} → <span className="text-blue-600 font-semibold">{currentItem?.name}</span>
+                </p>
+              </div>
+              <button onClick={handleDiscardCommentDraft} className="text-slate-400 hover:text-slate-600 cursor-pointer p-1">✕</button>
             </div>
+
+            {hasRestoredCommentDraft && (
+              <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-between gap-2 text-xs">
+                <div className="flex items-center gap-1.5 text-amber-800 font-semibold">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>Unsaved in-progress comment draft restored</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDiscardCommentDraft}
+                  className="text-amber-700 hover:text-amber-900 font-bold underline text-[11px] cursor-pointer shrink-0"
+                >
+                  Discard Draft
+                </button>
+              </div>
+            )}
 
             <form onSubmit={handleCreateComment} className="space-y-3.5 text-xs">
               <div>
@@ -1560,7 +1713,10 @@ export default function TemplateStudio({
                   type="text"
                   required
                   value={newCommentName}
-                  onChange={e => setNewCommentName(e.target.value)}
+                  onChange={e => {
+                    setNewCommentName(e.target.value);
+                    persistCommentDraft({ name: e.target.value });
+                  }}
                   placeholder="e.g. Moisture Intrusion Under Sink"
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 text-slate-800 font-semibold"
                 />
@@ -1571,7 +1727,11 @@ export default function TemplateStudio({
                   <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Category</label>
                   <select
                     value={newCommentType}
-                    onChange={e => setNewCommentType(e.target.value as CommentType)}
+                    onChange={e => {
+                      const val = e.target.value as CommentType;
+                      setNewCommentType(val);
+                      persistCommentDraft({ type: val });
+                    }}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 text-slate-800 font-semibold"
                   >
                     <option value="info">🟢 Informational</option>
@@ -1585,7 +1745,10 @@ export default function TemplateStudio({
                   <input
                     type="text"
                     value={newCommentLocation}
-                    onChange={e => setNewCommentLocation(e.target.value)}
+                    onChange={e => {
+                      setNewCommentLocation(e.target.value);
+                      persistCommentDraft({ location: e.target.value });
+                    }}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 text-slate-800 font-semibold"
                   />
                 </div>
@@ -1596,7 +1759,10 @@ export default function TemplateStudio({
                 <textarea
                   rows={3}
                   value={newCommentText}
-                  onChange={e => setNewCommentText(e.target.value)}
+                  onChange={e => {
+                    setNewCommentText(e.target.value);
+                    persistCommentDraft({ text: e.target.value });
+                  }}
                   placeholder="Enter observation narrative..."
                   className="w-full p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 text-slate-800 resize-none font-medium leading-relaxed"
                 />
@@ -1607,26 +1773,32 @@ export default function TemplateStudio({
                 <input
                   type="text"
                   value={newCommentRec}
-                  onChange={e => setNewCommentRec(e.target.value)}
+                  onChange={e => {
+                    setNewCommentRec(e.target.value);
+                    persistCommentDraft({ rec: e.target.value });
+                  }}
                   placeholder="e.g. Recommend licensed plumbing contractor evaluation"
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 text-slate-800"
                 />
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setNewCommentModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-sm"
-                >
-                  Add Comment
-                </button>
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-[10px] text-slate-400 italic">Auto-saving keystrokes to local storage</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleDiscardCommentDraft}
+                    className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold shadow-sm cursor-pointer"
+                  >
+                    Add Comment
+                  </button>
+                </div>
               </div>
             </form>
           </div>

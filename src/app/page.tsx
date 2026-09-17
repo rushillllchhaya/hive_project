@@ -82,8 +82,11 @@ const Card = ({ children, className = '', hover = false }: { children: React.Rea
   </div>
 );
 
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
+
 /* ─── Main Application Component ─────────────────────────── */
 export default function Home() {
+  const [isMounted, setIsMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<AppTab>('dashboard');
   const [templates, setTemplates] = useState<ParsedTemplate[]>([]);
   const [inspections, setInspections] = useState<InspectionProperty[]>([]);
@@ -147,8 +150,8 @@ export default function Home() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Load persisted states on initial mount
-  useEffect(() => {
+  // Synchronously load persisted states BEFORE paint to eliminate FOUC / dashboard flash
+  useIsomorphicLayoutEffect(() => {
     // 0. Active Tab & Views Persistence
     try {
       const hash = window.location.hash.replace('#', '').toLowerCase();
@@ -229,6 +232,8 @@ export default function Home() {
     } catch {
       setAgents(DEMO_AGENTS);
     }
+
+    setIsMounted(true);
   }, []);
 
   /* ── Save helpers ── */
@@ -571,7 +576,7 @@ export default function Home() {
                   }
                 }}
                 className={`flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
-                  activeTab === id
+                  isMounted && activeTab === id
                     ? 'bg-white text-blue-700 shadow-xs border border-slate-200/90 font-bold'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
                 }`}
@@ -611,10 +616,27 @@ export default function Home() {
       {/* ── Main View Content (Stretched out comfortably) ── */}
       <main className="flex-1 max-w-[1700px] w-full mx-auto px-6 sm:px-8 py-7">
 
-        {/* ══════════════════════════════════════════════════
-            1. DASHBOARD TAB
-        ══════════════════════════════════════════════════ */}
-        {activeTab === 'dashboard' && (
+        {!isMounted ? (
+          <div className="space-y-6 animate-pulse">
+            <div className="flex items-center justify-between">
+              <div className="h-8 bg-slate-200/70 rounded-xl w-60"></div>
+              <div className="h-8 bg-slate-200/50 rounded-xl w-36"></div>
+            </div>
+            <div className="h-[560px] bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs">
+              <div className="h-full bg-slate-100/60 rounded-xl flex items-center justify-center">
+                <div className="flex items-center gap-2.5 text-slate-400 text-xs font-semibold">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                  <span>Loading workspace...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* ══════════════════════════════════════════════════
+                1. DASHBOARD TAB
+            ══════════════════════════════════════════════════ */}
+            {activeTab === 'dashboard' && (
           <DashboardView
             inspections={inspections}
             agents={agents}
@@ -952,6 +974,8 @@ export default function Home() {
               </div>
             </div>
           </div>
+        )}
+          </>
         )}
 
       </main>
