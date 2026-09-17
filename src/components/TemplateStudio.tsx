@@ -1064,39 +1064,39 @@ export default function TemplateStudio({
            2. 3-COLUMN TEMPLATE STUDIO EDITOR (Detail View)
         ════════════════════════════════════════════════════ */
         <div className="space-y-4 animate-fade-up">
-          {/* ── Studio Header Bar with "← Back to All Templates" & NO dropdown ── */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 px-6 py-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              {/* Back to All Templates Button */}
+          {/* ── Studio Header Bar with "← Back" & single-row action buttons ── */}
+          <div className="bg-white rounded-2xl border border-slate-200/90 px-5 py-3.5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              {/* Shortened Back Button */}
               <button
                 type="button"
                 onClick={() => setViewMode('gallery')}
-                className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-2xs hover:border-slate-300 shrink-0"
-                title="Return to Template Library Gallery"
+                className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs hover:border-slate-300 shrink-0"
+                title="Back to All Templates"
               >
                 <ArrowLeft className="w-4 h-4 text-blue-600" />
-                <span>Back to All Templates</span>
+                <span>Back</span>
               </button>
 
-              <div className="w-px h-7 bg-slate-200 hidden sm:block mx-1" />
+              <div className="w-px h-6 bg-slate-200 hidden sm:block mx-0.5 shrink-0" />
 
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-sm shadow-blue-500/20 shrink-0">
-                <BookOpen className="w-5 h-5" />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-sm shadow-blue-500/20 shrink-0">
+                <BookOpen className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
                 {isRenamingTemplate ? (
-                  <form onSubmit={handleSaveRename} className="flex items-center gap-2">
+                  <form onSubmit={handleSaveRename} className="flex items-center gap-1.5 min-w-0">
                     <input
                       type="text"
                       autoFocus
                       value={renameValue}
                       onChange={e => setRenameValue(e.target.value)}
                       placeholder="Template Name"
-                      className="px-3 py-1 rounded-xl border-2 border-blue-500 bg-blue-50/60 text-slate-900 font-extrabold text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+                      className="px-2.5 py-1 rounded-xl border-2 border-blue-500 bg-blue-50/60 text-slate-900 font-extrabold text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 w-full max-w-xs sm:max-w-sm"
                     />
                     <button
                       type="submit"
-                      className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer transition-colors"
+                      className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer transition-colors shrink-0"
                       title="Save template name"
                     >
                       <Check className="w-3.5 h-3.5" />
@@ -1104,15 +1104,18 @@ export default function TemplateStudio({
                     <button
                       type="button"
                       onClick={() => setIsRenamingTemplate(false)}
-                      className="p-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-600 cursor-pointer transition-colors"
+                      className="p-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-600 cursor-pointer transition-colors shrink-0"
                       title="Cancel rename"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </form>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-base sm:text-lg font-extrabold uppercase tracking-tight text-slate-900 truncate">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <h2
+                      className="text-sm sm:text-base font-extrabold uppercase tracking-tight text-slate-900 truncate max-w-[180px] sm:max-w-[240px] md:max-w-[280px] lg:max-w-[360px] xl:max-w-[460px]"
+                      title={activeTemplate.name}
+                    >
                       {activeTemplate.name}
                     </h2>
                     <button
@@ -1135,26 +1138,27 @@ export default function TemplateStudio({
                           : 'bg-blue-50 text-blue-700 border-blue-200'
                       }`}
                     >
-                      <option value="completed">✓ Inspection Done</option>
-                      <option value="pending">⏳ Pending / Active</option>
-                      <option value="new_formed">✨ New Formed</option>
+                      <option value="completed">✓ Done</option>
+                      <option value="pending">⏳ Pending</option>
+                      <option value="new_formed">✨ New</option>
                     </select>
                   </div>
                 )}
-                <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  3-Column drag-and-drop studio · {activeTemplate.sections.length} Sections · Auto-saving enabled
+                <p className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">
+                  3-Column studio · {activeTemplate.sections.length} Sections · Auto-saving enabled
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2.5">
+            {/* Right Action Buttons: Never wraps onto second line */}
+            <div className="flex items-center gap-2 shrink-0 flex-nowrap overflow-x-auto">
               <button
                 onClick={() => {
                   setNewTemplateName('');
                   setNewTemplatePreset('new-home');
                   setNewTemplateModalOpen(true);
                 }}
-                className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs shadow-emerald-500/20"
+                className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs shadow-emerald-500/20 whitespace-nowrap"
                 title="Create an entirely new inspection template"
               >
                 <PlusCircle className="w-3.5 h-3.5" /> New Template
@@ -1163,7 +1167,7 @@ export default function TemplateStudio({
               {onNavigateToImport && (
                 <button
                   onClick={onNavigateToImport}
-                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                  className="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs whitespace-nowrap"
                   title="Import spreadsheet (.xlsx) template"
                 >
                   <Upload className="w-3.5 h-3.5 text-blue-600" /> Import XLS
@@ -1172,16 +1176,17 @@ export default function TemplateStudio({
 
               <button
                 onClick={() => onDuplicateTemplate(activeTemplateIndex)}
-                className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                className="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs whitespace-nowrap"
               >
                 <Copy className="w-3.5 h-3.5 text-slate-500" /> Duplicate
               </button>
 
               <button
                 onClick={() => setExportModalOpen(true)}
-                className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                className="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs whitespace-nowrap"
+                title="Export this template to JSON"
               >
-                <Download className="w-3.5 h-3.5 text-blue-600" /> Export Template
+                <Download className="w-3.5 h-3.5 text-blue-600" /> Export
               </button>
 
               <button
@@ -1196,7 +1201,7 @@ export default function TemplateStudio({
                   }
                 }}
                 disabled={templates.length <= 1}
-                className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                className={`px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                   templates.length <= 1
                     ? 'border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed opacity-50'
                     : 'border-red-200 bg-red-50 hover:bg-red-100 text-red-600 active:bg-red-200 shadow-2xs'
@@ -1208,7 +1213,7 @@ export default function TemplateStudio({
 
               <button
                 onClick={handleAddSection}
-                className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs shadow-blue-500/20"
+                className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs shadow-blue-500/20 whitespace-nowrap"
               >
                 <Plus className="w-3.5 h-3.5" /> Add Section
               </button>
