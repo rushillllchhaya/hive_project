@@ -27,6 +27,11 @@ import AgentsView from '@/components/AgentsView';
 const TEMPLATES_STORAGE_KEY = 'hive_inspect_templates_v2';
 const INSPECTIONS_STORAGE_KEY = 'hive_inspect_inspections_v2';
 const AGENTS_STORAGE_KEY = 'hive_inspect_agents_v2';
+const ACTIVE_TAB_STORAGE_KEY = 'hive_inspect_active_tab_v2';
+const STUDIO_VIEW_STORAGE_KEY = 'hive_inspect_studio_view_v2';
+const ACTIVE_TEMPLATE_IDX_STORAGE_KEY = 'hive_inspect_active_template_idx_v2';
+
+export type AppTab = 'dashboard' | 'templates' | 'metrics' | 'agents' | 'import' | 'ai';
 
 /* ─── Shared UI Primitives ─────────────────────────────────── */
 const Badge = ({ children, variant = 'blue' }: { children: React.ReactNode; variant?: 'blue' | 'green' | 'red' | 'amber' | 'gray' }) => {
@@ -79,12 +84,36 @@ const Card = ({ children, className = '', hover = false }: { children: React.Rea
 
 /* ─── Main Application Component ─────────────────────────── */
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'templates' | 'metrics' | 'agents' | 'import' | 'ai'>('dashboard');
+  const [activeTab, setActiveTab] = useState<AppTab>('dashboard');
   const [templates, setTemplates] = useState<ParsedTemplate[]>([]);
   const [inspections, setInspections] = useState<InspectionProperty[]>([]);
   const [agents, setAgents] = useState<AgentContact[]>([]);
   const [activeTemplateIndex, setActiveTemplateIndex] = useState<number>(0);
   const [studioViewMode, setStudioViewMode] = useState<'gallery' | 'editor'>('gallery');
+
+  const switchTab = (tab: AppTab) => {
+    setActiveTab(tab);
+    try {
+      localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, tab);
+      if (typeof window !== 'undefined') {
+        window.history.replaceState(null, '', `#${tab}`);
+      }
+    } catch {}
+  };
+
+  const switchStudioViewMode = (mode: 'gallery' | 'editor') => {
+    setStudioViewMode(mode);
+    try {
+      localStorage.setItem(STUDIO_VIEW_STORAGE_KEY, mode);
+    } catch {}
+  };
+
+  const switchActiveTemplateIndex = (idx: number) => {
+    setActiveTemplateIndex(idx);
+    try {
+      localStorage.setItem(ACTIVE_TEMPLATE_IDX_STORAGE_KEY, String(idx));
+    } catch {}
+  };
 
   // Template import state
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -104,8 +133,47 @@ export default function Home() {
   const [sqlModalOpen, setSqlModalOpen] = useState(false);
   const [copiedSql, setCopiedSql] = useState(false);
 
+  // Listen to browser forward/back buttons via hash
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      const validTabs: AppTab[] = ['dashboard', 'templates', 'metrics', 'agents', 'import', 'ai'];
+      if (validTabs.includes(hash as AppTab)) {
+        setActiveTab(hash as AppTab);
+        try { localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, hash); } catch {}
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   // Load persisted states on initial mount
   useEffect(() => {
+    // 0. Active Tab & Views Persistence
+    try {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      const validTabs: AppTab[] = ['dashboard', 'templates', 'metrics', 'agents', 'import', 'ai'];
+      if (validTabs.includes(hash as AppTab)) {
+        setActiveTab(hash as AppTab);
+      } else {
+        const savedTab = localStorage.getItem(ACTIVE_TAB_STORAGE_KEY);
+        if (savedTab && validTabs.includes(savedTab as AppTab)) {
+          setActiveTab(savedTab as AppTab);
+          window.history.replaceState(null, '', `#${savedTab}`);
+        }
+      }
+
+      const savedStudioMode = localStorage.getItem(STUDIO_VIEW_STORAGE_KEY);
+      if (savedStudioMode === 'gallery' || savedStudioMode === 'editor') {
+        setStudioViewMode(savedStudioMode);
+      }
+
+      const savedTemplateIdx = localStorage.getItem(ACTIVE_TEMPLATE_IDX_STORAGE_KEY);
+      if (savedTemplateIdx !== null && !isNaN(Number(savedTemplateIdx))) {
+        setActiveTemplateIndex(Number(savedTemplateIdx));
+      }
+    } catch {}
+
     // 1. Templates
     try {
       const savedTemplates = localStorage.getItem(TEMPLATES_STORAGE_KEY);
@@ -246,16 +314,16 @@ export default function Home() {
   };
 
   const handleOpenTemplateForInspection = (prop: InspectionProperty) => {
-    setActiveTab('templates');
-    setStudioViewMode('editor');
+    switchTab('templates');
+    switchStudioViewMode('editor');
     const matchedIdx = templates.findIndex(t =>
       t.name.toLowerCase().includes(prop.inspectionType.toLowerCase()) ||
       prop.inspectionType.toLowerCase().includes(t.name.toLowerCase())
     );
     if (matchedIdx >= 0) {
-      setActiveTemplateIndex(matchedIdx);
+      switchActiveTemplateIndex(matchedIdx);
     } else {
-      setActiveTemplateIndex(0);
+      switchActiveTemplateIndex(0);
     }
   };
 
@@ -264,7 +332,7 @@ export default function Home() {
     const deletedName = templates[index]?.name;
     const updated = templates.filter((_, i) => i !== index);
     saveTemplates(updated);
-    setActiveTemplateIndex(Math.max(0, Math.min(index, updated.length - 1)));
+    switchActiveTemplateIndex(Math.max(0, Math.min(index, updated.length - 1)));
     setImportStatusMessage(`Deleted template "${deletedName}" successfully.`);
   };
 
@@ -304,9 +372,9 @@ export default function Home() {
       if (newTemplates.length > 0) {
         const updated = [...newTemplates, ...templates];
         saveTemplates(updated);
-        setActiveTemplateIndex(0);
+        switchActiveTemplateIndex(0);
         setImportStatusMessage(`Successfully imported ${newTemplates.length} templates into your library!`);
-        setActiveTab('templates');
+        switchTab('templates');
       } else {
         setImportStatusMessage('No valid templates found in the uploaded file(s).');
       }
@@ -338,10 +406,10 @@ export default function Home() {
     } catch {}
     const updated = [importedPreview.template, ...templates];
     saveTemplates(updated);
-    setActiveTemplateIndex(0);
+    switchActiveTemplateIndex(0);
     setImportedPreview(null);
-    setStudioViewMode('editor');
-    setActiveTab('templates');
+    switchStudioViewMode('editor');
+    switchTab('templates');
   };
 
   const handleDuplicateTemplate = (i: number) => {
@@ -350,13 +418,13 @@ export default function Home() {
     clone.sourceFile = `copy-of-${templates[i].sourceFile || 'template'}.xlsx`;
     const updated = [...templates, clone];
     saveTemplates(updated);
-    setActiveTemplateIndex(updated.length - 1);
+    switchActiveTemplateIndex(updated.length - 1);
   };
 
   const handleCreateNewTemplate = (newTemplate: ParsedTemplate) => {
     const updated = [...templates, newTemplate];
     saveTemplates(updated);
-    setActiveTemplateIndex(updated.length - 1);
+    switchActiveTemplateIndex(updated.length - 1);
     setImportStatusMessage(`Created template "${newTemplate.name}" successfully!`);
   };
 
@@ -468,7 +536,7 @@ export default function Home() {
         <div className="max-w-[1700px] w-full mx-auto px-6 sm:px-8 h-16 flex items-center justify-between gap-4">
 
           {/* Logo - Hive Inspect */}
-          <div className="flex items-center gap-3 shrink-0 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
+          <div className="flex items-center gap-3 shrink-0 cursor-pointer" onClick={() => switchTab('dashboard')}>
             <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex items-center justify-center text-white font-black text-lg shadow-md shadow-blue-500/20">
               H
             </div>
@@ -497,9 +565,9 @@ export default function Home() {
               <button
                 key={id}
                 onClick={() => {
-                  setActiveTab(id as any);
+                  switchTab(id);
                   if (id === 'templates') {
-                    setStudioViewMode('gallery');
+                    switchStudioViewMode('gallery');
                   }
                 }}
                 className={`flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
@@ -554,7 +622,7 @@ export default function Home() {
             onToggleStatus={handleToggleInspectionStatus}
             onAddInspection={handleAddInspection}
             onOpenTemplate={handleOpenTemplateForInspection}
-            onNavigateTab={setActiveTab}
+            onNavigateTab={switchTab}
           />
         )}
 
@@ -566,16 +634,16 @@ export default function Home() {
             templates={templates}
             activeTemplateIndex={activeTemplateIndex}
             viewMode={studioViewMode}
-            onViewModeChange={setStudioViewMode}
-            onSelectTemplate={setActiveTemplateIndex}
+            onViewModeChange={switchStudioViewMode}
+            onSelectTemplate={switchActiveTemplateIndex}
             onUpdateTemplates={saveTemplates}
             onDuplicateTemplate={handleDuplicateTemplate}
             onDeleteTemplate={handleDeleteTemplate}
             onCreateNewTemplate={(newT) => {
               handleCreateNewTemplate(newT);
-              setStudioViewMode('editor');
+              switchStudioViewMode('editor');
             }}
-            onNavigateToImport={() => setActiveTab('import')}
+            onNavigateToImport={() => switchTab('import')}
             onTriggerAI={triggerAI}
           />
         )}
